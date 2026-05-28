@@ -54,7 +54,7 @@ export const VerifyOtp = ({ verifyEmail, setVerifyEmail }: VerifyOtpProps) => {
       fetchOptions: {
         onSuccess: () => {
           toast.success("Email verified successfully!");
-          router.push("/");
+          router.push("/dashboard");
           setVerifyEmail(null);
         },
         onError: (error) => {

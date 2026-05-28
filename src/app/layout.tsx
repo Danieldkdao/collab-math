@@ -3,6 +3,7 @@ import { Outfit, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "next-themes";
 
 const outfitSans = Outfit({
   variable: "--font-outfit-sans",
@@ -34,10 +35,17 @@ export default function RootLayout({
         geistMono.variable,
         "font-sans",
       )}
+      suppressHydrationWarning
     >
-      {/* todo: implement light/dark mode theme toggling */}
-      <body className="min-h-full dark flex flex-col">
-        <TooltipProvider>{children}</TooltipProvider>
+      <body className="min-h-full flex flex-col">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableColorScheme
+          disableTransitionOnChange
+        >
+          <TooltipProvider>{children}</TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

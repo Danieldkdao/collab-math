@@ -60,7 +60,7 @@ const SignUpSchema = () => {
   const onSubmit = async (data: FormType) => {
     await authClient.signUp.email({
       ...data,
-      callbackURL: "/",
+      callbackURL: "/dashboard",
       fetchOptions: {
         onSuccess: async () => {
           toast.success("Account created successfully!");
@@ -81,7 +81,7 @@ const SignUpSchema = () => {
     setSocialSignInLoading(true);
     await authClient.signIn.social({
       provider,
-      callbackURL: "/",
+      callbackURL: "/dashboard",
       fetchOptions: {
         onError: (error) => {
           toast.error(error.error.message || ERROR_MESSAGE);
