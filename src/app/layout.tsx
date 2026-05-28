@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Outfit, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfitSans = Outfit({
+  variable: "--font-outfit-sans",
   subsets: ["latin"],
 });
 
@@ -28,9 +27,18 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", inter.variable)}
+      className={cn(
+        "h-full",
+        "antialiased",
+        outfitSans.variable,
+        geistMono.variable,
+        "font-sans",
+      )}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      {/* todo: implement light/dark mode theme toggling */}
+      <body className="min-h-full dark flex flex-col">
+        <TooltipProvider>{children}</TooltipProvider>
+      </body>
     </html>
   );
 }

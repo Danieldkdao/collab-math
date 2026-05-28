@@ -1,5 +1,6 @@
 import { envServer } from "@/data/env/server";
 import { db } from "@/db/db";
+import * as schema from "@/db/schema";
 import { sendVerificationOtp } from "@/services/mailjet/emails/send-verification-otp";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -41,5 +42,6 @@ export const auth = betterAuth({
   },
   database: drizzleAdapter(db, {
     provider: "pg",
+    schema,
   }),
 });

@@ -1,5 +1,7 @@
 import { sendEmail } from "../client";
 
+const APP_NAME = "CollabMath";
+
 type OtpEmailType =
   | "sign-in"
   | "change-email"
@@ -23,31 +25,31 @@ const OTP_EMAIL_CONTENT: Record<
   }
 > = {
   "sign-in": {
-    preview: "Use this code to securely sign in to Math App.",
-    subject: "Math App - Your sign in code",
+    preview: `Use this code to securely sign in to ${APP_NAME}.`,
+    subject: `${APP_NAME} - Your sign in code`,
     heading: "Your sign in code",
-    body: "Use the verification code below to finish signing in to your Math App account.",
+    body: `Use the verification code below to finish signing in to your ${APP_NAME} account.`,
     note: "If you did not try to sign in, you can safely ignore this email.",
   },
   "change-email": {
     preview: "Confirm your new email address with this code.",
-    subject: "Math App - Confirm your new email",
+    subject: `${APP_NAME} - Confirm your new email`,
     heading: "Confirm your new email",
-    body: "Use the verification code below to confirm the email address change for your Math App account.",
+    body: `Use the verification code below to confirm the email address change for your ${APP_NAME} account.`,
     note: "If you did not request this change, please review your account security.",
   },
   "email-verification": {
     preview: "Verify your email address to finish setting up your account.",
-    subject: "Math App - Verify your email",
+    subject: `${APP_NAME} - Verify your email`,
     heading: "Verify your email",
-    body: "Welcome to Math App. Use the verification code below to verify your email address and complete setup.",
+    body: `Welcome to ${APP_NAME}. Use the verification code below to verify your email address and complete setup.`,
     note: "If you did not create an account, you can ignore this email.",
   },
   "forget-password": {
-    preview: "Use this code to reset your Math App password.",
-    subject: "Math App - Reset your password",
+    preview: `Use this code to reset your ${APP_NAME} password.`,
+    subject: `${APP_NAME} - Reset your password`,
     heading: "Reset your password",
-    body: "Use the verification code below to continue resetting your Math App password.",
+    body: `Use the verification code below to continue resetting your ${APP_NAME} password.`,
     note: "If you did not request a password reset, no changes have been made to your account.",
   },
 };
@@ -65,7 +67,7 @@ export const sendVerificationOtp = async ({
       </div>
       <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #d9e2ec;border-radius:20px;overflow:hidden;box-shadow:0 12px 40px rgba(15, 23, 42, 0.08);">
         <div style="padding:32px 32px 20px;background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 100%);color:#ffffff;">
-          <p style="margin:0 0 12px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.8;">Math App</p>
+          <p style="margin:0 0 12px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.8;">${APP_NAME}</p>
           <h1 style="margin:0;font-size:30px;line-height:1.2;">${content.heading}</h1>
         </div>
         <div style="padding:32px;">
@@ -104,7 +106,7 @@ export const sendVerificationOtp = async ({
 
   try {
     await sendEmail({
-      fromName: "Math App",
+      fromName: APP_NAME,
       to: email,
       subject: content.subject,
       html,

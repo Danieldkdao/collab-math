@@ -1,6 +1,8 @@
 import Mailjet from "node-mailjet";
 import { envServer } from "@/data/env/server";
 
+const DEFAULT_FROM_NAME = "CollabMath";
+
 const mailjet = Mailjet.apiConnect(
   envServer.MAILJET_API_KEY,
   envServer.MAILJET_API_SECRET,
@@ -22,7 +24,7 @@ type SendEmailOptions = {
 
 export const sendEmail = async ({
   from = envServer.SENDER_EMAIL,
-  fromName = "Math App",
+  fromName = DEFAULT_FROM_NAME,
   to,
   subject,
   html,
