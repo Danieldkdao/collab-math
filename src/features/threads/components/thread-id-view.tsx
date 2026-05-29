@@ -1,12 +1,11 @@
 import { MarkdownRenderer } from "@/components/markdown/markdown-renderer";
-import { TooltipWrapper } from "@/components/tooltip-wrapper";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserAvatar } from "@/components/user-avatar";
 import { ThreadTable, user } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/helpers";
 import { EditIcon } from "lucide-react";
+import { UpdateThreadDialog } from "./update-thread-dialog";
 
 export const ThreadIdView = async ({
   thread,
@@ -19,21 +18,20 @@ export const ThreadIdView = async ({
     <div className="w-full min-w-0">
       <Card>
         <CardContent className="flex flex-col gap-4 min-w-0">
-          <div className="flex flex-col gap-2 min-w-0">
+          <div className="flex flex-col gap-4 min-w-0">
             <div className="flex items-center w-full min-w-0">
-              <h1 className="text-3xl font-semibold flex-1 truncate">
+              <MarkdownRenderer variant="title" className="flex-1">
                 {thread.title}
-              </h1>
+              </MarkdownRenderer>
+
               {userId === thread.user.id && (
-                <TooltipWrapper content="Edit thread">
-                  <Button variant="outline" size="icon">
-                    <EditIcon />
-                  </Button>
-                </TooltipWrapper>
+                <UpdateThreadDialog variant="ghost" existingThread={thread}>
+                  <EditIcon />
+                </UpdateThreadDialog>
               )}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-2">
               <UserAvatar {...thread.user} />
               <span className="text-base">
                 <span className="font-medium">{thread.user.name}</span> started

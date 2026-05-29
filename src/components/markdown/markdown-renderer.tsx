@@ -5,7 +5,7 @@ import "@uiw/react-md-editor/markdown-editor.css";
 import "katex/dist/katex.min.css";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
-import type { ComponentPropsWithoutRef, CSSProperties } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from "react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { rehypeKatexOptions } from "./katex-config";
@@ -31,7 +31,7 @@ const markdownComponents = {
   h2: ({ children, ...props }: ComponentPropsWithoutRef<"h2">) => (
     <h2
       {...props}
-      className="mt-8 border-b border-border pb-2 text-3xl font-semibold tracking-tight text-foreground first:mt-0"
+      className="mt-8 pb-2 text-3xl font-semibold tracking-tight text-foreground first:mt-0"
     >
       {children}
     </h2>
@@ -186,19 +186,45 @@ const markdownComponents = {
   ),
 };
 
+const markdownTitleClassName =
+  "m-0 min-w-0 truncate border-0 p-0 text-3xl font-semibold leading-tight text-foreground";
+
+const MarkdownTitleBlock = ({ children }: { children?: ReactNode }) => (
+  <h1 className={markdownTitleClassName}>{children}</h1>
+);
+
+const markdownTitleComponents = {
+  ...markdownComponents,
+  h1: MarkdownTitleBlock,
+  h2: MarkdownTitleBlock,
+  h3: MarkdownTitleBlock,
+  h4: MarkdownTitleBlock,
+  h5: MarkdownTitleBlock,
+  h6: MarkdownTitleBlock,
+  p: MarkdownTitleBlock,
+  hr: () => null,
+};
+
 export const MarkdownRenderer = ({
   children,
   className,
+  variant = "default",
 }: {
   children: string;
   className?: string;
+  variant?: "default" | "title";
 }) => {
   const { resolvedTheme } = useTheme();
+  const isTitle = variant === "title";
 
   return (
     <div
       data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
-      className={cn("min-w-0 w-full font-sans text-foreground", className)}
+      className={cn(
+        "min-w-0 w-full font-sans text-foreground",
+        isTitle && "overflow-hidden",
+        className,
+      )}
       style={markdownThemeVars}
     >
       <div className="wmde-markdown-var" style={markdownThemeVars} />
@@ -209,9 +235,13 @@ export const MarkdownRenderer = ({
           [rehypeSanitize, markdownSanitizeSchema],
           [rehypeKatex, rehypeKatexOptions],
         ]}
-        className="max-w-none min-w-0 bg-transparent font-sans text-base text-foreground [&_.katex]:text-foreground [&_.katex-display]:my-6 [&_.katex-display]:w-full [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_.katex-display]:py-2 [&_.katex-display]:text-foreground [&_.katex-display>span]:min-w-max [&_img]:h-auto [&_img]:max-w-full [&_pre]:max-w-full"
+        className={cn(
+          "max-w-none min-w-0 bg-transparent font-sans text-base text-foreground [&_.katex]:text-foreground [&_.katex-display]:my-6 [&_.katex-display]:w-full [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_.katex-display]:py-2 [&_.katex-display]:text-foreground [&_.katex-display>span]:min-w-max [&_img]:h-auto [&_img]:max-w-full [&_pre]:max-w-full",
+          isTitle &&
+            "overflow-hidden [&_.katex-display]:my-0 [&_.katex-display]:inline-block [&_.katex-display]:w-auto [&_.katex-display]:py-0 [&_h1]:!border-b-0 [&_h1]:!pb-0 [&_h2]:!border-b-0 [&_h2]:!pb-0 [&_hr]:hidden",
+        )}
         style={markdownThemeVars}
-        components={markdownComponents}
+        components={isTitle ? markdownTitleComponents : markdownComponents}
       />
     </div>
   );

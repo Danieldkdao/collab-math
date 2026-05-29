@@ -113,7 +113,7 @@ export const CreateUpdateThreadForm = ({
       />
       <Button className="w-full" disabled={form.formState.isSubmitting}>
         <LoadingSwap isLoading={form.formState.isSubmitting}>
-          Create Thread
+          {existingThread ? "Save changes" : "Create Thread"}
         </LoadingSwap>
       </Button>
     </form>
