@@ -24,7 +24,7 @@ export const CreateUpdateMathProblemForm = ({
   existingMathProblem,
   doAfterAction,
 }: {
-  existingMathProblem: typeof MathProblemTable.$inferSelect;
+  existingMathProblem?: typeof MathProblemTable.$inferSelect;
   doAfterAction?: () => void;
 }) => {
   const form = useForm<CreateUpdateMathProblemSchemaType>({

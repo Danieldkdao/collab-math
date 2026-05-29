@@ -6,6 +6,7 @@ import { ThreadTable, user } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/helpers";
 import { EditIcon } from "lucide-react";
 import { UpdateThreadDialog } from "./update-thread-dialog";
+import { Button } from "@/components/ui/button";
 
 export const ThreadIdView = async ({
   thread,
@@ -25,8 +26,13 @@ export const ThreadIdView = async ({
               </MarkdownRenderer>
 
               {userId === thread.user.id && (
-                <UpdateThreadDialog variant="ghost" existingThread={thread}>
-                  <EditIcon />
+                <UpdateThreadDialog
+                  existingThread={thread}
+                  tooltipContent="Edit thread"
+                >
+                  <Button variant="ghost" size="icon" aria-label="Edit thread">
+                    <EditIcon />
+                  </Button>
                 </UpdateThreadDialog>
               )}
             </div>

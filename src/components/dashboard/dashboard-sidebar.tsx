@@ -19,23 +19,47 @@ import {
   SidebarMenuItem,
 } from "../ui/sidebar";
 import { DashboardSidebarUserProfile } from "./dashboard-sidebar-user-profile";
+import { ReactNode } from "react";
+import { CreateMathProblemDialog } from "@/features/math-problems/components/create-math-problem-dialog";
 
 type SidebarLink = {
   title: string;
   icon: LucideIcon;
-  href: string;
+  details:
+    | {
+        type: "link";
+        href: string;
+      }
+    | {
+        type: "button";
+        action?: () => void;
+        children?: ReactNode;
+      };
 };
 
 const quickActionLinks: SidebarLink[] = [
   {
     title: "New Thread",
     icon: MessageSquarePlusIcon,
-    href: "/dashboard/threads/create",
+    details: {
+      type: "link",
+      href: "/dashboard/threads/create",
+    },
   },
   {
     title: "New Math Problem",
     icon: SquareFunctionIcon,
-    href: "/dashboard/math-problems/create",
+    details: {
+      type: "button",
+      children: (
+        <CreateMathProblemDialog>
+          <SidebarMenuButton className="cursor-pointer">
+            <SquareFunctionIcon />
+            <span>New Math Problem</span>
+          </SidebarMenuButton>
+        </CreateMathProblemDialog>
+      ),
+    },
   },
 ];
 
@@ -43,17 +67,26 @@ const sidebarLinks: SidebarLink[] = [
   {
     title: "Threads",
     icon: MessageSquareTextIcon,
-    href: "/dashboard/threads",
+    details: {
+      type: "link",
+      href: "/dashboard/threads",
+    },
   },
   {
     title: "Math Problems",
     icon: SquareSigmaIcon,
-    href: "/dashboard/math-problems",
+    details: {
+      type: "link",
+      href: "/dashboard/math-problems",
+    },
   },
   {
     title: "Collaborators",
     icon: UsersRoundIcon,
-    href: "/dashboard/collaborators",
+    details: {
+      type: "link",
+      href: "/dashboard/collaborators",
+    },
   },
 ];
 
@@ -65,10 +98,14 @@ const SidebarLinkList = ({ links }: { links: SidebarLink[] }) => (
       return (
         <SidebarMenuItem key={link.title}>
           <SidebarMenuButton asChild tooltip={link.title}>
-            <Link href={link.href}>
-              <Icon />
-              <span>{link.title}</span>
-            </Link>
+            {link.details.type === "link" ? (
+              <Link href={link.details.href}>
+                <Icon />
+                <span>{link.title}</span>
+              </Link>
+            ) : (
+              link.details.children
+            )}
           </SidebarMenuButton>
         </SidebarMenuItem>
       );
