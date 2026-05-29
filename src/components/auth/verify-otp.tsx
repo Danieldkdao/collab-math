@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { authClient } from "@/lib/auth/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { ERROR_MESSAGE } from "@/lib/auth/constants";
+import { GENERAL_ERROR_MESSAGE } from "@/lib/auth/constants";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
 import { Field, FieldDescription, FieldError } from "../ui/field";
 import { Button } from "../ui/button";
@@ -58,7 +58,7 @@ export const VerifyOtp = ({ verifyEmail, setVerifyEmail }: VerifyOtpProps) => {
           setVerifyEmail(null);
         },
         onError: (error) => {
-          toast.error(error.error.message || ERROR_MESSAGE);
+          toast.error(error.error.message || GENERAL_ERROR_MESSAGE);
         },
       },
     });
@@ -76,7 +76,7 @@ export const VerifyOtp = ({ verifyEmail, setVerifyEmail }: VerifyOtpProps) => {
           setTimeToResend(30);
         },
         onError: (error) => {
-          toast.error(error.error.message || ERROR_MESSAGE);
+          toast.error(error.error.message || GENERAL_ERROR_MESSAGE);
         },
       },
     });
@@ -87,7 +87,7 @@ export const VerifyOtp = ({ verifyEmail, setVerifyEmail }: VerifyOtpProps) => {
     await authClient.signOut({
       fetchOptions: {
         onError: (error) => {
-          toast.error(error.error.message || ERROR_MESSAGE);
+          toast.error(error.error.message || GENERAL_ERROR_MESSAGE);
         },
       },
     });

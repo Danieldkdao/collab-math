@@ -16,7 +16,7 @@ import Link from "next/link";
 import { SendIcon } from "lucide-react";
 import { authClient } from "@/lib/auth/auth-client";
 import { toast } from "sonner";
-import { ERROR_MESSAGE } from "@/lib/auth/constants";
+import { GENERAL_ERROR_MESSAGE } from "@/lib/auth/constants";
 import {
   PasswordInput,
   PasswordInputStrengthChecker,
@@ -71,7 +71,7 @@ const SignUpSchema = () => {
           setVerifyEmail(data.email);
         },
         onError: (error) => {
-          toast.error(error.error.message || ERROR_MESSAGE);
+          toast.error(error.error.message || GENERAL_ERROR_MESSAGE);
         },
       },
     });
@@ -84,7 +84,7 @@ const SignUpSchema = () => {
       callbackURL: "/dashboard",
       fetchOptions: {
         onError: (error) => {
-          toast.error(error.error.message || ERROR_MESSAGE);
+          toast.error(error.error.message || GENERAL_ERROR_MESSAGE);
         },
       },
     });
