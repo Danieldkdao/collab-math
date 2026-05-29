@@ -10,7 +10,7 @@ export const ThreadTable = pgTable("threads", {
     .references(() => user.id, { onDelete: "cascade" })
     .notNull(),
   title: varchar("title").notNull(),
-  description: text("description"),
+  description: text("description").notNull(),
   createdAt,
   updatedAt,
 });

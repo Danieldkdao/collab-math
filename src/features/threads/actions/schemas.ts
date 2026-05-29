@@ -5,11 +5,7 @@ export const threadCreationUpdateSchema = z.object({
   description: z
     .string()
     .trim()
-    .refine((value) => value === undefined || value.length >= 10, {
-      error: "Please enter at least 10 characters.",
-    })
-    .transform((value) => (value === "" ? undefined : value))
-    .optional(),
+    .min(10, { error: "Please enter at least 10 characters." }),
 });
 export type ThreadCreationUpdateSchemaType = z.infer<
   typeof threadCreationUpdateSchema

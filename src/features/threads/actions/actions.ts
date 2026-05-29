@@ -11,6 +11,11 @@ import {
   UNAUTHED_ERROR_MESSAGE,
 } from "@/lib/auth/constants";
 import { insertThreadDb, updateThreadDb } from "../server/threads";
+import { cacheTag } from "next/cache";
+import { getThreadIdTag } from "../server/cache/threads";
+import { db } from "@/db/db";
+import { and, eq } from "drizzle-orm";
+import { ThreadTable } from "@/db/schema";
 
 export const createThreadAction = async (
   unsafeData: ThreadCreationUpdateSchemaType,
@@ -88,4 +93,20 @@ export const updateThreadAction = async (
       message: GENERAL_ERROR_MESSAGE,
     };
   }
+};
+
+export const getThreadAction = async (userId: string, threadId: string) => {
+  "use cache";
+  cacheTag(getThreadIdTag(threadId));
+
+  // todo: add invited people can see or public threads are available to everyone
+
+  const existingThread = await db.query.ThreadTable.findFirst({
+    where: and(eq(ThreadTable.id, threadId), eq(ThreadTable.userId, userId)),
+    with: {
+      user: true,
+    },
+  });
+
+  return existingThread ?? null;
 };

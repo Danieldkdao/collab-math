@@ -10,6 +10,7 @@ import { ThreadTable } from "@/db/schema";
 import {
   Field,
   FieldContent,
+  FieldDescription,
   FieldError,
   FieldLabel,
 } from "@/components/ui/field";
@@ -35,11 +36,11 @@ export const CreateUpdateThreadForm = ({
     defaultValues: existingThread
       ? {
           title: existingThread.title,
-          description: existingThread.description ?? undefined,
+          description: existingThread.description ?? "",
         }
       : {
           title: "",
-          description: undefined,
+          description: "",
         },
   });
 
@@ -103,6 +104,9 @@ export const CreateUpdateThreadForm = ({
                 }
               />
             </FieldContent>
+            <FieldDescription>
+              What is the thread going to be about? What will you discuss?
+            </FieldDescription>
             {fieldState.error && <FieldError errors={[fieldState.error]} />}
           </Field>
         )}
