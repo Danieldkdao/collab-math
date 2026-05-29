@@ -1,27 +1,27 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
-import {
-  threadCreationUpdateSchema,
-  ThreadCreationUpdateSchemaType,
-} from "../actions/schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ThreadTable } from "@/db/schema";
+import { MarkdownEditor } from "@/components/markdown/markdown-editor";
+import { RequiredFormFieldLabel } from "@/components/required-form-field-label";
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldContent,
   FieldDescription,
   FieldError,
-  FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { inputErrorBorder } from "@/lib/utils";
-import { MarkdownEditor } from "@/components/markdown/markdown-editor";
-import { Button } from "@/components/ui/button";
 import { LoadingSwap } from "@/components/ui/loading-swap";
-import { createThreadAction, updateThreadAction } from "../actions/actions";
-import { toast } from "sonner";
+import { ThreadTable } from "@/db/schema";
+import { inputErrorBorder } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { createThreadAction, updateThreadAction } from "../actions/actions";
+import {
+  threadCreationUpdateSchema,
+  ThreadCreationUpdateSchemaType,
+} from "../actions/schemas";
 
 export const CreateUpdateThreadForm = ({
   existingThread,
@@ -76,9 +76,7 @@ export const CreateUpdateThreadForm = ({
         name="title"
         render={({ field, fieldState }) => (
           <Field>
-            <FieldLabel>
-              Title<span className="text-destructive">*</span>
-            </FieldLabel>
+            <RequiredFormFieldLabel label="Title" />
             <FieldContent>
               <Input
                 {...field}
@@ -95,14 +93,9 @@ export const CreateUpdateThreadForm = ({
         name="description"
         render={({ field, fieldState }) => (
           <Field>
-            <FieldLabel>Description</FieldLabel>
+            <RequiredFormFieldLabel label="Description" />
             <FieldContent>
-              <MarkdownEditor
-                value={field.value ?? ""}
-                onChange={(value) =>
-                  field.onChange(value.trim() === "" ? undefined : value)
-                }
-              />
+              <MarkdownEditor value={field.value} onChange={field.onChange} />
             </FieldContent>
             <FieldDescription>
               What is the thread going to be about? What will you discuss?
