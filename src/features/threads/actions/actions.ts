@@ -12,7 +12,7 @@ import {
 } from "@/lib/auth/constants";
 import { insertThreadDb, updateThreadDb } from "../server/threads";
 import { cacheTag } from "next/cache";
-import { getThreadIdTag } from "../server/cache/threads";
+import { getThreadIdTag, getUserThreadTag } from "../server/cache/threads";
 import { db } from "@/db/db";
 import { and, eq } from "drizzle-orm";
 import { ThreadTable } from "@/db/schema";
@@ -109,4 +109,18 @@ export const getThreadAction = async (userId: string, threadId: string) => {
   });
 
   return existingThread ?? null;
+};
+
+export const getUserThreadsAction = async (userId: string) => {
+  "use cache";
+  cacheTag(getUserThreadTag(userId));
+
+  // todo: once collaborator table exists maybe add that as separate list on sidebar like My Threads (the threads that the current user owns) and Shared Threads (threads that the current user is a collaborator in but not owner)
+
+  const threads = await db
+    .select()
+    .from(ThreadTable)
+    .where(eq(ThreadTable.userId, userId));
+
+  return threads;
 };

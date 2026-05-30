@@ -7,9 +7,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { UserAvatar } from "../user-avatar";
-import { Button } from "../ui/button";
+} from "../../ui/dropdown-menu";
+import { UserAvatar } from "../../user-avatar";
+import { Button } from "../../ui/button";
 import { LogOutIcon, SettingsIcon, UserIcon } from "lucide-react";
 
 export const DashboardSidebarUserProfile = () => {

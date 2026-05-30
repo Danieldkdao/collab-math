@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
 
 const outfitSans = Outfit({
   variable: "--font-outfit-sans",
@@ -44,6 +45,7 @@ export default function RootLayout({
           enableColorScheme
           disableTransitionOnChange
         >
+          <Toaster />
           <TooltipProvider>{children}</TooltipProvider>
         </ThemeProvider>
       </body>

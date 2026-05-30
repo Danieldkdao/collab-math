@@ -1,12 +1,12 @@
+import { CreateMathProblemDialog } from "@/features/math-problems/components/create-math-problem-dialog";
+import { SidebarLink } from "@/lib/types";
 import {
   MessageSquarePlusIcon,
   MessageSquareTextIcon,
   SquareFunctionIcon,
   SquareSigmaIcon,
   UsersRoundIcon,
-  type LucideIcon,
 } from "lucide-react";
-import Link from "next/link";
 import {
   Sidebar,
   SidebarContent,
@@ -14,28 +14,11 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-  SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
-} from "../ui/sidebar";
+} from "../../ui/sidebar";
 import { DashboardSidebarUserProfile } from "./dashboard-sidebar-user-profile";
-import { ReactNode } from "react";
-import { CreateMathProblemDialog } from "@/features/math-problems/components/create-math-problem-dialog";
-
-type SidebarLink = {
-  title: string;
-  icon: LucideIcon;
-  details:
-    | {
-        type: "link";
-        href: string;
-      }
-    | {
-        type: "button";
-        action?: () => void;
-        children?: ReactNode;
-      };
-};
+import { SidebarLinkList } from "./sidebar-link-list";
+import { ThreadListSidebar } from "@/features/threads/components/thread-list-sidebar";
 
 const quickActionLinks: SidebarLink[] = [
   {
@@ -90,29 +73,6 @@ const sidebarLinks: SidebarLink[] = [
   },
 ];
 
-const SidebarLinkList = ({ links }: { links: SidebarLink[] }) => (
-  <SidebarMenu>
-    {links.map((link) => {
-      const Icon = link.icon;
-
-      return (
-        <SidebarMenuItem key={link.title}>
-          <SidebarMenuButton asChild tooltip={link.title}>
-            {link.details.type === "link" ? (
-              <Link href={link.details.href}>
-                <Icon />
-                <span>{link.title}</span>
-              </Link>
-            ) : (
-              link.details.children
-            )}
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      );
-    })}
-  </SidebarMenu>
-);
-
 export const DashboardSidebar = () => {
   return (
     <Sidebar>
@@ -128,6 +88,7 @@ export const DashboardSidebar = () => {
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarLinkList links={sidebarLinks} />
         </SidebarGroupContent>
+        <ThreadListSidebar />
       </SidebarContent>
       <SidebarFooter>
         <DashboardSidebarUserProfile />
