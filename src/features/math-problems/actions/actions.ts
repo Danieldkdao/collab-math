@@ -14,6 +14,11 @@ import {
   insertMathProblemDb,
   updateMathProblemDb,
 } from "../server/math-problems";
+import { cacheTag } from "next/cache";
+import { getUserMathProblemTag } from "../server/cache/math-problems";
+import { db } from "@/db/db";
+import { MathProblemTable } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export const createMathProblemAction = async (
   unsafeData: CreateUpdateMathProblemSchemaType,
@@ -94,4 +99,16 @@ export const updateMathProblemAction = async (
       message: GENERAL_ERROR_MESSAGE,
     };
   }
+};
+
+export const getUserMathProblemsAction = async (userId: string) => {
+  "use cache";
+  cacheTag(getUserMathProblemTag(userId));
+
+  const mathProblems = await db
+    .select()
+    .from(MathProblemTable)
+    .where(eq(MathProblemTable.userId, userId));
+
+  return mathProblems;
 };

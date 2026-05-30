@@ -37,7 +37,10 @@ export const createThreadAction = async (
   }
 
   try {
-    const createdThread = await insertThreadDb({ ...data, userId });
+    const createdThread = await insertThreadDb(
+      { ...data, userId },
+      data.mathProblems.map((p) => p.id),
+    );
     if (!createdThread) {
       throw new Error("Failed to create new thread.");
     }
@@ -77,7 +80,12 @@ export const updateThreadAction = async (
   }
 
   try {
-    const updatedThread = await updateThreadDb(threadId, userId, data);
+    const updatedThread = await updateThreadDb(
+      threadId,
+      userId,
+      data,
+      data.mathProblems.map((p) => p.id),
+    );
     if (!updatedThread) {
       throw new Error("Failed to update thread.");
     }
@@ -105,6 +113,11 @@ export const getThreadAction = async (userId: string, threadId: string) => {
     where: and(eq(ThreadTable.id, threadId), eq(ThreadTable.userId, userId)),
     with: {
       user: true,
+      mathProblems: {
+        with: {
+          mathProblem: true,
+        },
+      },
     },
   });
 

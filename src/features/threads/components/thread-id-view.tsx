@@ -2,19 +2,27 @@ import { MarkdownRenderer } from "@/components/markdown/markdown-renderer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserAvatar } from "@/components/user-avatar";
-import { ThreadTable, user } from "@/db/schema";
-import { getCurrentUser } from "@/lib/auth/helpers";
+import {
+  MathProblemTable,
+  ThreadMathProblemTable,
+  ThreadTable,
+  user,
+} from "@/db/schema";
 import { EditIcon } from "lucide-react";
 import { UpdateThreadDialog } from "./update-thread-dialog";
-import { Button } from "@/components/ui/button";
 
 export const ThreadIdView = async ({
   thread,
+  currentUserId,
 }: {
-  thread: typeof ThreadTable.$inferSelect & { user: typeof user.$inferSelect };
+  thread: typeof ThreadTable.$inferSelect & {
+    user: typeof user.$inferSelect;
+    mathProblems: (typeof ThreadMathProblemTable.$inferSelect & {
+      mathProblem: typeof MathProblemTable.$inferSelect;
+    })[];
+  };
+  currentUserId: string;
 }) => {
-  const { userId } = await getCurrentUser();
-
   return (
     <div className="w-full min-w-0">
       <Card>
@@ -24,15 +32,12 @@ export const ThreadIdView = async ({
               <MarkdownRenderer variant="title" className="flex-1">
                 {thread.title}
               </MarkdownRenderer>
-
-              {userId === thread.user.id && (
+              {currentUserId === thread.userId && (
                 <UpdateThreadDialog
                   existingThread={thread}
                   tooltipContent="Edit thread"
                 >
-                  <Button variant="ghost" size="icon" aria-label="Edit thread">
-                    <EditIcon />
-                  </Button>
+                  <EditIcon />
                 </UpdateThreadDialog>
               )}
             </div>

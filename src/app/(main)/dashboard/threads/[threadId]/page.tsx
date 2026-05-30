@@ -28,7 +28,7 @@ const ThreadSuspense = async ({ params }: ThreadIdParams) => {
     return <div>resusable thread not found component</div>;
   }
 
-  return <ThreadIdView thread={thread} />;
+  return <ThreadIdView currentUserId={userId} thread={thread} />;
 };
 
 export default ThreadIdPage;

@@ -18,6 +18,7 @@
     "@hookform/resolvers": "^5.4.0",
     "@neondatabase/serverless": "^1.1.0",
     "@t3-oss/env-nextjs": "^0.13.11",
+    "@tanstack/react-query": "^5.100.14",
     "@uiw/react-md-editor": "^4.1.1",
     "@zxcvbn-ts/core": "^3.0.4",
     "@zxcvbn-ts/language-common": "^3.0.4",

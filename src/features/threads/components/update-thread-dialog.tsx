@@ -13,13 +13,21 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ThreadTable } from "@/db/schema";
+import {
+  MathProblemTable,
+  ThreadMathProblemTable,
+  ThreadTable,
+} from "@/db/schema";
 import { useRouter } from "next/navigation";
 import { ReactNode, useState } from "react";
 import { CreateUpdateThreadForm } from "./create-update-thread-form";
 
 type UpdateThreadDialogProps = {
-  existingThread: typeof ThreadTable.$inferSelect;
+  existingThread: typeof ThreadTable.$inferSelect & {
+    mathProblems: (typeof ThreadMathProblemTable.$inferSelect & {
+      mathProblem: typeof MathProblemTable.$inferSelect;
+    })[];
+  };
   children: ReactNode;
   tooltipContent?: ReactNode;
 };
@@ -34,12 +42,12 @@ export const UpdateThreadDialog = ({
   const trigger = tooltipContent ? (
     <Tooltip>
       <TooltipTrigger asChild>
-        <DialogTrigger asChild>{children}</DialogTrigger>
+        <DialogTrigger>{children}</DialogTrigger>
       </TooltipTrigger>
       <TooltipContent>{tooltipContent}</TooltipContent>
     </Tooltip>
   ) : (
-    <DialogTrigger asChild>{children}</DialogTrigger>
+    <DialogTrigger>{children}</DialogTrigger>
   );
 
   return (
