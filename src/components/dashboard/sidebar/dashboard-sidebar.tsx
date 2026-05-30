@@ -19,14 +19,22 @@ import {
 import { DashboardSidebarUserProfile } from "./dashboard-sidebar-user-profile";
 import { SidebarLinkList } from "./sidebar-link-list";
 import { ThreadListSidebar } from "@/features/threads/components/thread-list-sidebar";
+import { CreateThreadDialog } from "@/features/threads/components/create-thread-dialog";
 
 const quickActionLinks: SidebarLink[] = [
   {
     title: "New Thread",
     icon: MessageSquarePlusIcon,
     details: {
-      type: "link",
-      href: "/dashboard/threads/create",
+      type: "button",
+      children: (
+        <CreateThreadDialog>
+          <SidebarMenuButton className="cursor-pointer">
+            <MessageSquarePlusIcon />
+            <span>New Thread</span>
+          </SidebarMenuButton>
+        </CreateThreadDialog>
+      ),
     },
   },
   {
