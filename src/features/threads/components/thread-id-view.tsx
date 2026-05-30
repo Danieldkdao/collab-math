@@ -10,6 +10,7 @@ import {
 } from "@/db/schema";
 import { EditIcon } from "lucide-react";
 import { UpdateThreadDialog } from "./update-thread-dialog";
+import { ThreadViewMathProblemsList } from "./thread-view-math-problems-list";
 
 export const ThreadIdView = async ({
   thread,
@@ -54,11 +55,17 @@ export const ThreadIdView = async ({
             <TabsList className="w-full">
               <TabsTrigger value="description">Description</TabsTrigger>
               <TabsTrigger value="conversations">Conversations</TabsTrigger>
+              <TabsTrigger value="problems">Problems</TabsTrigger>
             </TabsList>
             <TabsContent value="description">
               <MarkdownRenderer>{thread.description}</MarkdownRenderer>
             </TabsContent>
             <TabsContent value="conversations"></TabsContent>
+            <TabsContent value="problems">
+              <ThreadViewMathProblemsList
+                problems={thread.mathProblems.map((p) => p.mathProblem)}
+              />
+            </TabsContent>
           </Tabs>
         </CardContent>
       </Card>

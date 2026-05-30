@@ -65,7 +65,7 @@ const markdownComponents = {
   p: ({ children, ...props }: ComponentPropsWithoutRef<"p">) => (
     <p
       {...props}
-      className="my-4 break-words text-[1.02rem] leading-8 text-foreground/90 [overflow-wrap:anywhere]"
+      className="my-4 wrap-anywhere text-[1.02rem] leading-8 text-foreground/90"
     >
       {children}
     </p>
@@ -99,7 +99,7 @@ const markdownComponents = {
   li: ({ children, ...props }: ComponentPropsWithoutRef<"li">) => (
     <li
       {...props}
-      className="break-words pl-1 leading-7 [overflow-wrap:anywhere]"
+      className="wrap-anywhere pl-1 leading-7"
     >
       {children}
     </li>
@@ -238,7 +238,7 @@ export const MarkdownRenderer = ({
         className={cn(
           "max-w-none min-w-0 bg-transparent font-sans text-base text-foreground [&_.katex]:text-foreground [&_.katex-display]:my-6 [&_.katex-display]:w-full [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_.katex-display]:py-2 [&_.katex-display]:text-foreground [&_.katex-display>span]:min-w-max [&_img]:h-auto [&_img]:max-w-full [&_pre]:max-w-full",
           isTitle &&
-            "overflow-hidden [&_.katex-display]:my-0 [&_.katex-display]:inline-block [&_.katex-display]:w-auto [&_.katex-display]:py-0 [&_h1]:!border-b-0 [&_h1]:!pb-0 [&_h2]:!border-b-0 [&_h2]:!pb-0 [&_hr]:hidden",
+            "overflow-hidden [&_.katex-display]:my-0 [&_.katex-display]:inline-block [&_.katex-display]:w-auto [&_.katex-display]:py-0 [&_h1]:border-b-0! [&_h1]:pb-0! [&_h2]:border-b-0! [&_h2]:pb-0! [&_hr]:hidden",
         )}
         style={markdownThemeVars}
         components={isTitle ? markdownTitleComponents : markdownComponents}
