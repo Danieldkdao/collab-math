@@ -4,8 +4,10 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Separator } from "@/components/ui/separator";
 import { MathProblemTable } from "@/db/schema";
 import { ChevronsUpDownIcon } from "lucide-react";
+import { Fragment } from "react/jsx-runtime";
 
 export const ThreadViewMathProblemsList = ({
   problems,
@@ -15,17 +17,20 @@ export const ThreadViewMathProblemsList = ({
   return problems.length ? (
     <div className="flex flex-col gap-8 w-full min-w-0 mt-4">
       {problems.map((problem) => (
-        <Collapsible>
-          <CollapsibleTrigger className="flex items-center w-full min-w-0 cursor-pointer">
-            <MarkdownRenderer className="flex-1 text-start text-xl">
-              {`### ${problem.title}`}
-            </MarkdownRenderer>
-            <ChevronsUpDownIcon />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-4">
-            <MarkdownRenderer>{problem.content}</MarkdownRenderer>
-          </CollapsibleContent>
-        </Collapsible>
+        <Fragment key={problem.id}>
+          <Collapsible defaultOpen>
+            <CollapsibleTrigger className="flex items-center w-full min-w-0 cursor-pointer">
+              <MarkdownRenderer className="flex-1 text-start text-xl">
+                {`### ${problem.title}`}
+              </MarkdownRenderer>
+              <ChevronsUpDownIcon />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-4">
+              <MarkdownRenderer>{problem.content}</MarkdownRenderer>
+            </CollapsibleContent>
+          </Collapsible>
+          <Separator className="last:hidden" />
+        </Fragment>
       ))}
     </div>
   ) : (

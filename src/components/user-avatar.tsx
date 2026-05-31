@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 type UserAvatarProps = {
   name: string;
-  image: string | undefined | null;
+  image?: string | undefined | null;
   className?: string;
   textClassName?: string;
 };

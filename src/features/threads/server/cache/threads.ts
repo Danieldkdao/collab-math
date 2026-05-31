@@ -1,4 +1,4 @@
-import { getGlobalTag, getIdTag, getUserIdTag } from "@/lib/data-cache";
+import { getGlobalTag, getIdTag, getUserIdResourceTag } from "@/lib/data-cache";
 import { revalidateTag } from "next/cache";
 
 export const getThreadGlobalTag = () => {
@@ -10,7 +10,7 @@ export const getThreadIdTag = (threadId: string) => {
 };
 
 export const getUserThreadTag = (userId: string) => {
-  return getUserIdTag("threads", userId);
+  return getUserIdResourceTag("threads", userId);
 };
 
 export const revalidateThreadCache = (threadId: string, userId: string) => {

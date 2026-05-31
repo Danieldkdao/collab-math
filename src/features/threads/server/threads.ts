@@ -1,12 +1,17 @@
 import { db } from "@/db/db";
-import { ThreadTable } from "@/db/schema";
+import { ThreadMembershipTable, ThreadTable } from "@/db/schema";
 import { revalidateThreadCache } from "./cache/threads";
 import { and, eq, inArray } from "drizzle-orm";
 import { ThreadMathProblemTable } from "@/db/schemas/thread-math-problem";
+import {
+  deleteThreadMembershipsDb,
+  upsertThreadMembershipsDb,
+} from "@/features/thread-memberships/server/thread-memberships";
 
 export const insertThreadDb = async (
   threadData: typeof ThreadTable.$inferInsert,
   mathProblemIds: string[],
+  collaboratorIds: string[],
 ) => {
   const insertedThread = await db.transaction(async (tx) => {
     const [insertedThread] = await tx
@@ -32,6 +37,15 @@ export const insertThreadDb = async (
       throw new Error("Failed to attach math problems.");
     }
 
+    const insertedThreadMemberships = await upsertThreadMembershipsDb(
+      insertedThread.id,
+      collaboratorIds,
+      tx,
+    );
+    if (insertedThreadMemberships.length !== collaboratorIds.length) {
+      throw new Error("Failed to send memberships to collaborators.");
+    }
+
     return insertedThread;
   });
 
@@ -45,6 +59,7 @@ export const updateThreadDb = async (
   userId: string,
   threadData: Partial<typeof ThreadTable.$inferSelect>,
   mathProblemIds: string[],
+  collaboratorIds: string[],
 ) => {
   const updatedThread = await db.transaction(async (tx) => {
     const [updatedThread] = await db
@@ -113,6 +128,51 @@ export const updateThreadDb = async (
       removedIds.length !== mathProblemIdsToRemove.length
     ) {
       throw new Error("Failed to update math problem connections.");
+    }
+
+    const existingThreadMemberships = await db
+      .select()
+      .from(ThreadMembershipTable)
+      .where(eq(ThreadMembershipTable.threadId, updatedThread.id));
+    const existingThreadMembershipUserIds = existingThreadMemberships.map(
+      (i) => i.userId,
+    );
+
+    const userIdsToAdd = [
+      ...new Set(
+        collaboratorIds.filter(
+          (userId) =>
+            !existingThreadMembershipUserIds.includes(userId) ||
+            existingThreadMemberships.find(
+              (i) => i.userId === userId && i.status === "rejected",
+            ),
+        ),
+      ),
+    ];
+
+    const userIdsToDelete = [
+      ...new Set(
+        existingThreadMembershipUserIds.filter(
+          (userId) => !collaboratorIds.includes(userId),
+        ),
+      ),
+    ];
+
+    const [upsertedThreadMemberships, deletedThreadMemberships] =
+      await Promise.all([
+        userIdsToAdd.length
+          ? upsertThreadMembershipsDb(updatedThread.id, userIdsToAdd, tx)
+          : [],
+        userIdsToDelete.length
+          ? deleteThreadMembershipsDb(updatedThread.id, userIdsToDelete, tx)
+          : [],
+      ]);
+
+    if (
+      upsertedThreadMemberships.length !== userIdsToAdd.length ||
+      deletedThreadMemberships.length !== userIdsToDelete.length
+    ) {
+      throw new Error("Failed to update collaborator access.");
     }
 
     return updatedThread;

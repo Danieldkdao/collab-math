@@ -20,6 +20,7 @@ import { DashboardSidebarUserProfile } from "./dashboard-sidebar-user-profile";
 import { SidebarLinkList } from "./sidebar-link-list";
 import { ThreadListSidebar } from "@/features/threads/components/thread-list-sidebar";
 import { CreateThreadDialog } from "@/features/threads/components/create-thread-dialog";
+import Link from "next/link";
 
 const quickActionLinks: SidebarLink[] = [
   {
@@ -85,7 +86,9 @@ export const DashboardSidebar = () => {
   return (
     <Sidebar>
       <SidebarHeader className="pt-4 px-4">
-        <h1 className="text-3xl font-semibold text-primary">CollabMath</h1>
+        <Link href="/dashboard">
+          <h1 className="text-3xl font-semibold text-primary">CollabMath</h1>
+        </Link>
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarGroupContent>
@@ -93,7 +96,7 @@ export const DashboardSidebar = () => {
           <SidebarLinkList links={quickActionLinks} />
         </SidebarGroupContent>
         <SidebarGroupContent>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Data</SidebarGroupLabel>
           <SidebarLinkList links={sidebarLinks} />
         </SidebarGroupContent>
         <ThreadListSidebar />

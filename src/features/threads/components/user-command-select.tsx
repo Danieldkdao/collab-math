@@ -16,30 +16,28 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { ThreadMathProblemSchemaType } from "@/features/threads/actions/schemas";
+import { UserAvatar } from "@/components/user-avatar";
+import { getUsersAction } from "@/features/users/actions/actions";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { PAGE_SIZE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  ChevronsUpDownIcon,
-  FunctionSquareIcon,
-  Loader2Icon,
-  XIcon,
-} from "lucide-react";
+import { ChevronsUpDownIcon, Loader2Icon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getUserMathProblemsAction } from "../actions/actions";
+import { ThreadCollaboratorSchemaType } from "../actions/schemas";
+import { Badge } from "@/components/ui/badge";
+import { formatThreadMembershipStatus } from "@/features/thread-memberships/lib/formatters";
 
-type MathProblemCommandSelectProps = {
-  values: ThreadMathProblemSchemaType[];
-  onChange: (value: ThreadMathProblemSchemaType) => void;
+type UserCommandSelectProps = {
+  values: ThreadCollaboratorSchemaType[];
+  onChange: (value: ThreadCollaboratorSchemaType) => void;
 };
 
-export const MathProblemCommandSelect = ({
+export const UserCommandSelect = ({
   values,
   onChange,
-}: MathProblemCommandSelectProps) => {
+}: UserCommandSelectProps) => {
   const commandListRef = useRef<HTMLDivElement | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const pendingFetchRef = useRef(false);
@@ -58,13 +56,9 @@ export const MathProblemCommandSelect = ({
     isFetchingNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ["mathProblems", session?.user.id, debouncedSearch[0]],
+    queryKey: ["users", session?.user.id, debouncedSearch[0]],
     queryFn: ({ pageParam }) =>
-      getUserMathProblemsAction(
-        session?.user.id ?? "",
-        pageParam,
-        debouncedSearch[0],
-      ),
+      getUsersAction(pageParam, debouncedSearch[0], session?.user.id),
     enabled: !!session?.user.id,
     initialPageParam: 0,
     getNextPageParam: (lastPage, _, lastPageParam) => {
@@ -75,11 +69,11 @@ export const MathProblemCommandSelect = ({
     },
   });
 
-  const mathProblems = useMemo(() => {
+  const users = useMemo(() => {
     return data?.pages.flatMap((page) => page) ?? [];
   }, [data]);
 
-  const fetchMoreMathProblemsIfNeeded = useCallback(() => {
+  const fetchMoreUsersIfNeeded = useCallback(() => {
     const root = commandListRef.current;
 
     if (!open) return;
@@ -102,10 +96,10 @@ export const MathProblemCommandSelect = ({
   useEffect(() => {
     if (!open) return;
 
-    const animationFrame = requestAnimationFrame(fetchMoreMathProblemsIfNeeded);
+    const animationFrame = requestAnimationFrame(fetchMoreUsersIfNeeded);
 
     return () => cancelAnimationFrame(animationFrame);
-  }, [fetchMoreMathProblemsIfNeeded, open, mathProblems.length]);
+  }, [fetchMoreUsersIfNeeded, open, users.length]);
 
   useEffect(() => {
     if (!open) return;
@@ -120,7 +114,7 @@ export const MathProblemCommandSelect = ({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          fetchMoreMathProblemsIfNeeded();
+          fetchMoreUsersIfNeeded();
         }
       },
       {
@@ -133,7 +127,7 @@ export const MathProblemCommandSelect = ({
     observer.observe(node);
 
     return () => observer.disconnect();
-  }, [open, fetchMoreMathProblemsIfNeeded, hasNextPage]);
+  }, [open, fetchMoreUsersIfNeeded, hasNextPage]);
 
   return (
     <div className="flex flex-col gap-4 min-w-0">
@@ -145,7 +139,7 @@ export const MathProblemCommandSelect = ({
             className="w-full flex-1 min-w-0 truncate"
             type="button"
           >
-            {values.length} math problems selected
+            {values.length} users selected
           </Button>
           <CollapsibleTrigger asChild>
             <Button variant="outline" size="icon" type="button">
@@ -154,23 +148,28 @@ export const MathProblemCommandSelect = ({
           </CollapsibleTrigger>
         </div>
         <CollapsibleContent>
-          {values.map((problem) => (
+          {values.map((user) => (
             <div
-              key={problem.id}
+              key={user.id}
               className="w-full flex items-center min-w-0 gap-2 py-4"
             >
-              <FunctionSquareIcon />
-              <span className="flex-1 min-w-0 truncate">{problem.title}</span>
-              <TooltipWrapper content="Remove problem">
-                <Button
-                  variant="destructive"
-                  type="button"
-                  size="icon"
-                  onClick={() => onChange(problem)}
-                >
-                  <XIcon />
-                </Button>
-              </TooltipWrapper>
+              <UserAvatar {...user} />
+              <span className="flex-1 min-w-0 truncate">{user.name}</span>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline">
+                  {formatThreadMembershipStatus(user.status)}
+                </Badge>
+                <TooltipWrapper content="Remove user">
+                  <Button
+                    variant="destructive"
+                    type="button"
+                    size="icon"
+                    onClick={() => onChange(user)}
+                  >
+                    <XIcon />
+                  </Button>
+                </TooltipWrapper>
+              </div>
             </div>
           ))}
         </CollapsibleContent>
@@ -180,29 +179,33 @@ export const MathProblemCommandSelect = ({
         <Command shouldFilter={false}>
           <CommandInput
             value={search}
-            onValueChange={(search) => setSearch(search)}
-            placeholder="Search by title..."
+            onValueChange={(value) => setSearch(value)}
+            placeholder="Search by name..."
           />
-          <CommandList
-            ref={commandListRef}
-            onScroll={fetchMoreMathProblemsIfNeeded}
-          >
-            <CommandEmpty>No math problems found.</CommandEmpty>
+          <CommandList ref={commandListRef} onScroll={fetchMoreUsersIfNeeded}>
+            <CommandEmpty>No users found.</CommandEmpty>
             <CommandGroup>
               <div className="flex flex-col gap-2">
-                {mathProblems.map((problem) => (
+                {users.map((user) => (
                   <CommandItem
-                    key={problem.id}
-                    value={problem.title}
-                    onSelect={() => onChange(problem)}
+                    key={user.id}
+                    value={`${user.name} ${user.id}`}
+                    onSelect={() =>
+                      onChange({
+                        id: user.id,
+                        name: user.name,
+                        image: user.image,
+                        status: "pending",
+                      })
+                    }
                     className={cn(
                       "p-4",
-                      values.map((p) => p.id).includes(problem.id) &&
+                      values.map((p) => p.id).includes(user.id) &&
                         "bg-primary/30! hover:bg-primary/20! data-selected:bg-primary/20!",
                     )}
                   >
-                    <FunctionSquareIcon className="size-5" />
-                    <span className="text-base">{problem.title}</span>
+                    <UserAvatar {...user} />
+                    <span className="text-base">{user.name}</span>
                   </CommandItem>
                 ))}
                 <div ref={loadMoreRef} className="h-1 bg-transparent w-full" />

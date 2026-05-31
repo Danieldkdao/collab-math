@@ -1,8 +1,9 @@
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, varchar } from "drizzle-orm/pg-core";
 import { createdAt, id, updatedAt } from "../helpers";
 import { user } from "./user";
 import { relations } from "drizzle-orm";
 import { ThreadMathProblemTable } from "./thread-math-problem";
+import { ThreadMembershipTable } from "./thread-membership";
 
 export const ThreadTable = pgTable("threads", {
   id,
@@ -11,6 +12,7 @@ export const ThreadTable = pgTable("threads", {
     .notNull(),
   title: varchar("title").notNull(),
   description: text("description").notNull(),
+  isPublic: boolean("is_public").notNull(),
   createdAt,
   updatedAt,
 });
@@ -21,4 +23,5 @@ export const threadRelations = relations(ThreadTable, ({ one, many }) => ({
     references: [user.id],
   }),
   mathProblems: many(ThreadMathProblemTable),
+  memberships: many(ThreadMembershipTable),
 }));

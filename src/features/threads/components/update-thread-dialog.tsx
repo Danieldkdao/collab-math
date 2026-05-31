@@ -16,17 +16,20 @@ import {
 import {
   MathProblemTable,
   ThreadMathProblemTable,
+  ThreadMembershipTable,
   ThreadTable,
 } from "@/db/schema";
 import { useRouter } from "next/navigation";
 import { ReactNode, useState } from "react";
 import { CreateUpdateThreadForm } from "./create-update-thread-form";
+import { User } from "@/lib/auth/auth";
 
 type UpdateThreadDialogProps = {
   existingThread: typeof ThreadTable.$inferSelect & {
     mathProblems: (typeof ThreadMathProblemTable.$inferSelect & {
       mathProblem: typeof MathProblemTable.$inferSelect;
     })[];
+    memberships: (typeof ThreadMembershipTable.$inferSelect & { user: User })[];
   };
   children: ReactNode;
   tooltipContent?: ReactNode;

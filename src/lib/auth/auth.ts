@@ -45,3 +45,5 @@ export const auth = betterAuth({
     schema,
   }),
 });
+
+export type User = typeof auth.$Infer.Session.user;

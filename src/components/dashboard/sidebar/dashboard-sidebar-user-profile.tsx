@@ -11,8 +11,13 @@ import {
 import { UserAvatar } from "../../user-avatar";
 import { Button } from "../../ui/button";
 import { LogOutIcon, SettingsIcon, UserIcon } from "lucide-react";
+import { authClient } from "@/lib/auth/auth-client";
+import { toast } from "sonner";
+import { GENERAL_ERROR_MESSAGE } from "@/lib/auth/constants";
+import { useRouter } from "next/navigation";
 
 export const DashboardSidebarUserProfile = () => {
+  const router = useRouter();
   const { data: session } = useAuthSession();
 
   if (!session) {
@@ -30,7 +35,7 @@ export const DashboardSidebarUserProfile = () => {
             name={session.user.name}
             image={session.user.image}
             className="size-10"
-            textClassName="text-xl font-medium"
+            textClassName="text-lg font-medium"
           />
           <div className="flex min-w-0 flex-1 flex-col items-start gap-0.5 overflow-hidden">
             <span className="block w-full truncate text-left text-lg font-semibold">
@@ -57,7 +62,22 @@ export const DashboardSidebarUserProfile = () => {
           Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive">
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={async () => {
+            await authClient.signOut({
+              fetchOptions: {
+                onSuccess: () => {
+                  toast.success("Signed out successfully!");
+                  router.push("/sign-in");
+                },
+                onError: (error) => {
+                  toast.error(error.error.message || GENERAL_ERROR_MESSAGE);
+                },
+              },
+            });
+          }}
+        >
           <LogOutIcon />
           Log Out
         </DropdownMenuItem>

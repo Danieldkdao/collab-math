@@ -1,4 +1,4 @@
-import { getGlobalTag, getIdTag, getUserIdTag } from "@/lib/data-cache";
+import { getGlobalTag, getIdTag, getUserIdResourceTag } from "@/lib/data-cache";
 import { revalidateTag } from "next/cache";
 
 export const getMathProblemGlobalTag = () => {
@@ -10,7 +10,7 @@ export const getMathProblemIdTag = (mathProblemId: string) => {
 };
 
 export const getUserMathProblemTag = (userId: string) => {
-  return getUserIdTag("math_problems", userId);
+  return getUserIdResourceTag("math_problems", userId);
 };
 
 export const revalidateMathProblemCache = (

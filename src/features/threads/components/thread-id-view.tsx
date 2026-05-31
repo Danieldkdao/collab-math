@@ -5,12 +5,14 @@ import { UserAvatar } from "@/components/user-avatar";
 import {
   MathProblemTable,
   ThreadMathProblemTable,
+  ThreadMembershipTable,
   ThreadTable,
   user,
 } from "@/db/schema";
 import { EditIcon } from "lucide-react";
 import { UpdateThreadDialog } from "./update-thread-dialog";
 import { ThreadViewMathProblemsList } from "./thread-view-math-problems-list";
+import { User } from "@/lib/auth/auth";
 
 export const ThreadIdView = async ({
   thread,
@@ -21,6 +23,7 @@ export const ThreadIdView = async ({
     mathProblems: (typeof ThreadMathProblemTable.$inferSelect & {
       mathProblem: typeof MathProblemTable.$inferSelect;
     })[];
+    memberships: (typeof ThreadMembershipTable.$inferSelect & { user: User })[];
   };
   currentUserId: string;
 }) => {

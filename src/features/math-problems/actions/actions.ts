@@ -18,7 +18,8 @@ import { cacheTag } from "next/cache";
 import { getUserMathProblemTag } from "../server/cache/math-problems";
 import { db } from "@/db/db";
 import { MathProblemTable } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, desc, eq, ilike } from "drizzle-orm";
+import { PAGE_SIZE } from "@/lib/constants";
 
 export const createMathProblemAction = async (
   unsafeData: CreateUpdateMathProblemSchemaType,
@@ -101,14 +102,28 @@ export const updateMathProblemAction = async (
   }
 };
 
-export const getUserMathProblemsAction = async (userId: string) => {
+export const getUserMathProblemsAction = async (
+  userId: string,
+  page: number,
+  search?: string,
+) => {
   "use cache";
   cacheTag(getUserMathProblemTag(userId));
+
+  const offset = page * PAGE_SIZE;
 
   const mathProblems = await db
     .select()
     .from(MathProblemTable)
-    .where(eq(MathProblemTable.userId, userId));
+    .where(
+      and(
+        eq(MathProblemTable.userId, userId),
+        search ? ilike(MathProblemTable.title, `%${search}%`) : undefined,
+      ),
+    )
+    .orderBy(desc(MathProblemTable.updatedAt), desc(MathProblemTable.createdAt))
+    .offset(offset)
+    .limit(PAGE_SIZE);
 
   return mathProblems;
 };
