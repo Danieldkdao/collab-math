@@ -1,3 +1,4 @@
+import { AlertWrapper } from "@/components/alert-wrapper";
 import { MarkdownRenderer } from "@/components/markdown/markdown-renderer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,10 +10,11 @@ import {
   ThreadTable,
   user,
 } from "@/db/schema";
-import { EditIcon } from "lucide-react";
-import { UpdateThreadDialog } from "./update-thread-dialog";
-import { ThreadViewMathProblemsList } from "./thread-view-math-problems-list";
+import { checkUserThreadPermissions } from "@/features/thread-memberships/lib/permissions";
 import { User } from "@/lib/auth/auth";
+import { EditIcon, TriangleAlertIcon } from "lucide-react";
+import { ThreadViewMathProblemsList } from "./thread-view-math-problems-list";
+import { UpdateThreadDialog } from "./update-thread-dialog";
 
 export const ThreadIdView = async ({
   thread,
@@ -28,7 +30,17 @@ export const ThreadIdView = async ({
   currentUserId: string;
 }) => {
   return (
-    <div className="w-full min-w-0">
+    <div className="w-full min-w-0 flex flex-col gap-4">
+      {!(await checkUserThreadPermissions(currentUserId, thread.id, [
+        "can_comment",
+      ])) && (
+        <AlertWrapper
+          title="Limited Access"
+          description="You are currently in view-only mode. This means that you can view the content, but are unable to participate in discussions and other interactives related to this thread. To unlock these, accept the thread membership sent to you by the thread owner."
+          icon={TriangleAlertIcon}
+          variant="warning"
+        />
+      )}
       <Card>
         <CardContent className="flex flex-col gap-4 min-w-0">
           <div className="flex flex-col gap-4 min-w-0">

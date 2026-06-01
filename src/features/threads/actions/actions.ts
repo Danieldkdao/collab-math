@@ -1,21 +1,23 @@
 "use server";
 
-import { getCurrentUser } from "@/lib/auth/helpers";
-import {
-  threadCreationUpdateSchema,
-  ThreadCreationUpdateSchemaType,
-} from "./schemas";
+import { db } from "@/db/db";
+import { ThreadTable } from "@/db/schema";
+import { checkUserThreadPermissions } from "@/features/thread-memberships/lib/permissions";
+import { getUserThreadMembershipTag } from "@/features/thread-memberships/server/cache/thread-memberships";
 import {
   GENERAL_ERROR_MESSAGE,
   INVALID_DATA_ERROR_MESSAGE,
   UNAUTHED_ERROR_MESSAGE,
 } from "@/lib/auth/constants";
-import { insertThreadDb, updateThreadDb } from "../server/threads";
+import { getCurrentUser } from "@/lib/auth/helpers";
+import { eq } from "drizzle-orm";
 import { cacheTag } from "next/cache";
 import { getThreadIdTag, getUserThreadTag } from "../server/cache/threads";
-import { db } from "@/db/db";
-import { and, eq } from "drizzle-orm";
-import { ThreadTable } from "@/db/schema";
+import { insertThreadDb, updateThreadDb } from "../server/threads";
+import {
+  threadCreationUpdateSchema,
+  ThreadCreationUpdateSchemaType,
+} from "./schemas";
 
 export const createThreadAction = async (
   unsafeData: ThreadCreationUpdateSchemaType,
@@ -107,12 +109,10 @@ export const updateThreadAction = async (
 
 export const getThreadAction = async (userId: string, threadId: string) => {
   "use cache";
-  cacheTag(getThreadIdTag(threadId));
-
-  // todo: add invited people can see or public threads are available to everyone
+  cacheTag(getThreadIdTag(threadId), getUserThreadMembershipTag(userId));
 
   const existingThread = await db.query.ThreadTable.findFirst({
-    where: and(eq(ThreadTable.id, threadId), eq(ThreadTable.userId, userId)),
+    where: eq(ThreadTable.id, threadId),
     with: {
       user: true,
       mathProblems: {
@@ -128,7 +128,18 @@ export const getThreadAction = async (userId: string, threadId: string) => {
     },
   });
 
-  return existingThread ?? null;
+  if (!existingThread) return null;
+
+  if (existingThread.userId === userId || existingThread.isPublic)
+    return existingThread;
+
+  if (
+    !existingThread.isPublic &&
+    !(await checkUserThreadPermissions(userId, existingThread.id, ["can_view"]))
+  )
+    return null;
+
+  return existingThread;
 };
 
 export const getUserThreadsAction = async (userId: string) => {

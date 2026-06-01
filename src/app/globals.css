@@ -29,6 +29,9 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -48,7 +51,7 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif: Outfit, Georgia, Cambria, "Times New Roman", Times, serif;
   --radius: 0.625rem;
   --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
   --tracking-tight: calc(var(--tracking-normal) - 0.025em);
@@ -72,7 +75,6 @@
   --shadow-blur: var(--shadow-blur);
   --shadow-opacity: var(--shadow-opacity);
   --color-shadow-color: var(--shadow-color);
-  --color-destructive-foreground: var(--destructive-foreground);
 }
 
 :root {
@@ -91,6 +93,9 @@
   --accent: oklch(0.7148 0.1257 215.22);
   --accent-foreground: oklch(1 0 0);
   --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(1 0 0);
+  --warning: oklch(0.769 0.188 70.08);
+  --warning-foreground: oklch(0.2795 0.0368 260.03);
   --border: oklch(0.869 0.0198 252.89);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.7107 0.0351 256.79);
@@ -109,8 +114,7 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --font-sans: Outfit, ui-sans-serif, sans-serif, system-ui;
-  --destructive-foreground: oklch(1 0 0);
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif: Outfit, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
@@ -153,6 +157,9 @@
   --accent: oklch(0.7748 0.1318 201.6395);
   --accent-foreground: oklch(0.1995 0.0198 262.0232);
   --destructive: oklch(0.5494 0.1993 25.1156);
+  --destructive-foreground: oklch(0.9801 0.0096 252.8096);
+  --warning: oklch(0.769 0.188 70.08);
+  --warning-foreground: oklch(0.1995 0.0198 262.0232);
   --border: oklch(0.275 0 0);
   --input: oklch(0.325 0 0);
   --ring: oklch(0.556 0 0);
@@ -169,10 +176,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.275 0 0);
   --sidebar-ring: oklch(0.439 0 0);
-  --destructive-foreground: oklch(0.9801 0.0096 252.8096);
   --radius: 0.625rem;
   --font-sans: Outfit, ui-sans-serif, sans-serif, system-ui;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif: Outfit, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
