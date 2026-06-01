@@ -10,6 +10,7 @@ import {
   ThreadTable,
   user,
 } from "@/db/schema";
+import { ThreadCommentList } from "@/features/comments/components/thread-comment-list";
 import { checkUserThreadPermissions } from "@/features/thread-memberships/lib/permissions";
 import { User } from "@/lib/auth/auth";
 import { EditIcon, TriangleAlertIcon } from "lucide-react";
@@ -76,7 +77,8 @@ export const ThreadIdView = async ({
             <TabsContent value="description">
               <MarkdownRenderer>{thread.description}</MarkdownRenderer>
             </TabsContent>
-            <TabsContent value="comments" className="flex flex-col gap-4">
+            <TabsContent value="comments" className="flex flex-col gap-4 pt-4">
+              <ThreadCommentList threadId={thread.id} />
               <CreateUpdateCommentForm threadId={thread.id} />
             </TabsContent>
             <TabsContent value="problems">

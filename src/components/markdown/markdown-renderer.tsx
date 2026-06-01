@@ -221,7 +221,7 @@ export const MarkdownRenderer = ({
     <div
       data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
       className={cn(
-        "min-w-0 w-full font-sans text-foreground",
+        "markdown-font-scope min-w-0 w-full font-sans text-foreground",
         isTitle && "overflow-hidden",
         className,
       )}
@@ -236,7 +236,7 @@ export const MarkdownRenderer = ({
           [rehypeKatex, rehypeKatexOptions],
         ]}
         className={cn(
-          "max-w-none min-w-0 bg-transparent font-sans text-base text-foreground [&_.katex]:text-foreground [&_.katex-display]:my-6 [&_.katex-display]:w-full [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_.katex-display]:py-2 [&_.katex-display]:text-foreground [&_.katex-display>span]:min-w-max [&_img]:h-auto [&_img]:max-w-full [&_pre]:max-w-full",
+          "max-w-none min-w-0 bg-transparent font-sans text-base text-foreground [&_.katex]:font-sans [&_.katex]:text-foreground [&_.katex-display]:my-6 [&_.katex-display]:w-full [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_.katex-display]:py-2 [&_.katex-display]:text-foreground [&_.katex-display>span]:min-w-max [&_img]:h-auto [&_img]:max-w-full [&_pre]:max-w-full",
           isTitle &&
             "overflow-hidden [&_.katex-display]:my-0 [&_.katex-display]:inline-block [&_.katex-display]:w-auto [&_.katex-display]:py-0 [&_h1]:border-b-0! [&_h1]:pb-0! [&_h2]:border-b-0! [&_h2]:pb-0! [&_hr]:hidden",
         )}

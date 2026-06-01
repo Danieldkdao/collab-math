@@ -1,17 +1,23 @@
 "use server";
 
-import { getCurrentUser } from "@/lib/auth/helpers";
-import {
-  createUpdateCommentSchema,
-  CreateUpdateCommentSchemaType,
-} from "./schemas";
+import { db } from "@/db/db";
+import { CommentTable } from "@/db/schemas/comment";
 import { checkUserThreadPermissions } from "@/features/thread-memberships/lib/permissions";
+import { User } from "@/lib/auth/auth";
 import {
   GENERAL_ERROR_MESSAGE,
   INVALID_DATA_ERROR_MESSAGE,
   NO_PERMISSION_ERROR_MESSAGE,
 } from "@/lib/auth/constants";
+import { getCurrentUser } from "@/lib/auth/helpers";
+import { and, desc, eq, isNull } from "drizzle-orm";
+import { cacheTag } from "next/cache";
+import { getThreadCommentTag } from "../server/cache/comments";
 import { insertCommentDb, updateCommentDb } from "../server/comments";
+import {
+  createUpdateCommentSchema,
+  CreateUpdateCommentSchemaType,
+} from "./schemas";
 
 export const createCommentAction = async (
   threadId: string,
@@ -108,5 +114,41 @@ export const updateCommentAction = async (
       error: true,
       message: GENERAL_ERROR_MESSAGE,
     };
+  }
+};
+
+export const getThreadComments = async (
+  threadId: string,
+  commentId?: string,
+): Promise<
+  | (typeof CommentTable.$inferSelect & {
+      user: User | null;
+      comments: (typeof CommentTable.$inferSelect)[];
+    })[]
+  | null
+> => {
+  "use cache";
+  cacheTag(getThreadCommentTag(threadId));
+
+  try {
+    const comments = await db.query.CommentTable.findMany({
+      where: and(
+        eq(CommentTable.threadId, threadId),
+        commentId
+          ? eq(CommentTable.parentId, commentId)
+          : isNull(CommentTable.parentId),
+      ),
+      with: {
+        user: true,
+        comments: true,
+      },
+      orderBy: [desc(CommentTable.createdAt), desc(CommentTable.id)],
+    });
+
+    return comments;
+  } catch (error) {
+    console.error(error);
+    console.error("cause", error instanceof Error ? error.cause : undefined);
+    return null;
   }
 };

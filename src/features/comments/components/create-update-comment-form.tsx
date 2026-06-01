@@ -44,6 +44,7 @@ export const CreateUpdateCommentForm = ({
       toast.error(response.message);
     } else {
       toast.success(response.message);
+      form.reset();
       router.refresh();
     }
   };

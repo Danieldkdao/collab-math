@@ -9,9 +9,7 @@ import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import type { ICommand, MDEditorProps } from "@uiw/react-md-editor";
 import {
-  useEffect,
   useMemo,
-  useState,
   type ComponentPropsWithoutRef,
   type KeyboardEvent,
 } from "react";
@@ -27,7 +25,6 @@ import {
 } from "@uiw/react-md-editor/commands";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "../ui/button";
-import { Skeleton } from "../ui/skeleton";
 import {
   CALLOUT_TYPES,
   type CalloutType,
@@ -139,11 +136,6 @@ export const MarkdownEditor = ({
 }) => {
   const { resolvedTheme } = useTheme();
   const isMobile = useIsMobile();
-  const [isPending, setIsPending] = useState(true);
-
-  useEffect(() => {
-    setIsPending(false);
-  }, []);
 
   const handleListEnter = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key !== "Enter" || event.shiftKey) {
@@ -196,7 +188,7 @@ export const MarkdownEditor = ({
     () =>
       ({
         className:
-          "prose prose-slate max-w-none px-5 py-4 dark:prose-invert prose-headings:tracking-tight prose-pre:overflow-x-auto prose-ul:list-disc prose-ol:list-decimal prose-ul:pl-6 prose-ol:pl-6 prose-li:my-1 prose-blockquote:border-l-4 prose-blockquote:border-border prose-blockquote:pl-4 prose-blockquote:text-muted-foreground [&_.contains-task-list]:list-none [&_.contains-task-list]:pl-0 [&_.task-list-item]:list-none [&_.task-list-item]:pl-0",
+          "markdown-font-scope prose prose-slate max-w-none px-5 py-4 font-sans dark:prose-invert prose-headings:font-sans prose-headings:tracking-tight prose-p:font-sans prose-li:font-sans prose-blockquote:font-sans prose-code:font-mono prose-pre:font-mono prose-pre:overflow-x-auto prose-ul:list-disc prose-ol:list-decimal prose-ul:pl-6 prose-ol:pl-6 prose-li:my-1 prose-blockquote:border-l-4 prose-blockquote:border-border prose-blockquote:pl-4 prose-blockquote:text-muted-foreground [&_.contains-task-list]:list-none [&_.contains-task-list]:pl-0 [&_.katex]:font-sans [&_.task-list-item]:list-none [&_.task-list-item]:pl-0",
         remarkPlugins: [remarkMath, ...markdownRemarkPlugins],
         rehypePlugins: [
           [rehypeSanitize, markdownSanitizeSchema],
@@ -246,7 +238,7 @@ export const MarkdownEditor = ({
               return (
                 <code
                   {...props}
-                  className="block overflow-x-auto bg-transparent px-0 text-[1.05rem]"
+                  className="block overflow-x-auto bg-transparent px-0 font-sans text-[1.05rem]"
                   dangerouslySetInnerHTML={{ __html: html }}
                 />
               );
@@ -309,20 +301,10 @@ export const MarkdownEditor = ({
     [],
   );
 
-  if (isPending) {
-    return (
-      <Skeleton
-        aria-hidden="true"
-        className="rounded-xl border border-input shadow-xs"
-        style={{ height: isMobile ? 392 : 552 }}
-      />
-    );
-  }
-
   return (
     <div
       data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
-      className="rounded-xl border border-input bg-background shadow-xs"
+      className="markdown-font-scope rounded-xl border border-input bg-background shadow-xs"
     >
       <div className="wmde-markdown-var" />
       <div className="p-4">
@@ -340,7 +322,7 @@ export const MarkdownEditor = ({
           }}
           previewOptions={previewOptions}
           extraCommands={[codeEdit, codeLive, codePreview, fullscreen]}
-          className="overflow-hidden rounded-md border-0! shadow-none!"
+          className="overflow-hidden rounded-md border-0! font-sans shadow-none!"
         />
       </div>
     </div>
