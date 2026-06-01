@@ -15,6 +15,7 @@ import { User } from "@/lib/auth/auth";
 import { EditIcon, TriangleAlertIcon } from "lucide-react";
 import { ThreadViewMathProblemsList } from "./thread-view-math-problems-list";
 import { UpdateThreadDialog } from "./update-thread-dialog";
+import { CreateUpdateCommentForm } from "@/features/comments/components/create-update-comment-form";
 
 export const ThreadIdView = async ({
   thread,
@@ -75,7 +76,9 @@ export const ThreadIdView = async ({
             <TabsContent value="description">
               <MarkdownRenderer>{thread.description}</MarkdownRenderer>
             </TabsContent>
-            <TabsContent value="comments"></TabsContent>
+            <TabsContent value="comments" className="flex flex-col gap-4">
+              <CreateUpdateCommentForm threadId={thread.id} />
+            </TabsContent>
             <TabsContent value="problems">
               <ThreadViewMathProblemsList threadId={thread.id} />
             </TabsContent>

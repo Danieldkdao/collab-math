@@ -1,4 +1,9 @@
-type CacheTag = "users" | "threads" | "math_problems" | "thread_memberships";
+type CacheTag =
+  | "users"
+  | "threads"
+  | "math_problems"
+  | "thread_memberships"
+  | "comments";
 
 export const getGlobalTag = (tag: CacheTag) => {
   return `global:${tag}` as const;
