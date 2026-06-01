@@ -1,24 +1,53 @@
-import { db } from "@/db/db";
+import { db, type DbTransaction } from "@/db/db";
 import { ThreadMembershipTable } from "@/db/schema";
-import { and, eq, ExtractTablesWithRelations, inArray } from "drizzle-orm";
-import { NeonQueryResultHKT } from "drizzle-orm/neon-serverless";
-import { PgTransaction } from "drizzle-orm/pg-core";
+import { and, eq, inArray } from "drizzle-orm";
 import { revalidateThreadMembershipCache } from "./cache/thread-memberships";
+import { revalidateThreadCache } from "@/features/threads/server/cache/threads";
+
+export const updateThreadMembershipDb = async (
+  threadId: string,
+  userId: string,
+  data: Partial<typeof ThreadMembershipTable.$inferSelect>,
+) => {
+  const [updatedThreadMembership] = await db
+    .update(ThreadMembershipTable)
+    .set(data)
+    .where(
+      and(
+        eq(ThreadMembershipTable.userId, userId),
+        eq(ThreadMembershipTable.threadId, threadId),
+      ),
+    )
+    .returning();
+
+  revalidateThreadMembershipCache(
+    updatedThreadMembership.userId,
+    updatedThreadMembership.threadId,
+  );
+  revalidateThreadCache(
+    updatedThreadMembership.threadId,
+    updatedThreadMembership.userId,
+  );
+
+  return updatedThreadMembership;
+};
 
 export const upsertThreadMembershipsDb = async (
   threadId: string,
-  userIds: string[],
-  tx?: PgTransaction<
-    NeonQueryResultHKT,
-    typeof import("/Users/danieldao/Desktop/collab-math/src/db/schema"),
-    ExtractTablesWithRelations<
-      typeof import("/Users/danieldao/Desktop/collab-math/src/db/schema")
-    >
-  >,
+  userIds: ({ userId: string } & Partial<
+    Omit<typeof ThreadMembershipTable.$inferSelect, "threadId" | "userId">
+  >)[],
+  tx?: DbTransaction,
 ) => {
   const insertedThreadMemberships = await (tx ?? db)
     .insert(ThreadMembershipTable)
-    .values(userIds.map((userId) => ({ threadId, userId })))
+    .values(
+      userIds.map(({ userId, ...fields }) => ({
+        threadId,
+        userId,
+        ...fields,
+      })),
+    )
     .onConflictDoUpdate({
       target: [ThreadMembershipTable.userId, ThreadMembershipTable.threadId],
       set: {
@@ -37,13 +66,7 @@ export const upsertThreadMembershipsDb = async (
 export const deleteThreadMembershipsDb = async (
   threadId: string,
   userIds: string[],
-  tx?: PgTransaction<
-    NeonQueryResultHKT,
-    typeof import("/Users/danieldao/Desktop/collab-math/src/db/schema"),
-    ExtractTablesWithRelations<
-      typeof import("/Users/danieldao/Desktop/collab-math/src/db/schema")
-    >
-  >,
+  tx?: DbTransaction,
 ) => {
   const deletedThreadMemberships = await (tx ?? db)
     .delete(ThreadMembershipTable)

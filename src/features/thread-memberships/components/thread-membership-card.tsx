@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getThreadMembershipStatusBadgeVariants } from "../lib/formatters";
+import { AcceptThreadMembershipButton } from "./accept-thread-membership-button";
+import { RejectThreadMembershipButton } from "./reject-thread-membership-button";
 
 export const ThreadMembershipCard = ({
   threadMembershipData,
@@ -45,12 +47,21 @@ export const ThreadMembershipCard = ({
       case "pending":
         return (
           <>
-            <Button className="w-full">Accept</Button>
-            <Button variant="destructive" className="w-full">
+            <AcceptThreadMembershipButton
+              threadId={thread.id}
+              className="w-full"
+            >
+              Accept
+            </AcceptThreadMembershipButton>
+            <RejectThreadMembershipButton
+              threadId={thread.id}
+              className="w-full"
+              variant="destructive"
+            >
               Reject
-            </Button>
+            </RejectThreadMembershipButton>
             <Button variant="outline" className="w-full" asChild>
-              <Link href={`/dashboard/threads/${thread.id}`}>
+              <Link href={`/dashboard/threads/${thread.id}`} target="_blank">
                 <SquareArrowOutUpRightIcon />
                 View Thread
               </Link>

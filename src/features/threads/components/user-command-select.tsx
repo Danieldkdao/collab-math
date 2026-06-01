@@ -1,6 +1,7 @@
 "use client";
 
 import { TooltipWrapper } from "@/components/tooltip-wrapper";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -17,6 +18,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { UserAvatar } from "@/components/user-avatar";
+import { getThreadMembershipStatusBadgeVariants } from "@/features/thread-memberships/lib/formatters";
 import { getUsersAction } from "@/features/users/actions/actions";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { PAGE_SIZE } from "@/lib/constants";
@@ -26,8 +28,6 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { ChevronsUpDownIcon, Loader2Icon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ThreadCollaboratorSchemaType } from "../actions/schemas";
-import { Badge } from "@/components/ui/badge";
-import { formatThreadMembershipStatus } from "@/features/thread-memberships/lib/formatters";
 
 type UserCommandSelectProps = {
   values: ThreadCollaboratorSchemaType[];
@@ -148,30 +148,38 @@ export const UserCommandSelect = ({
           </CollapsibleTrigger>
         </div>
         <CollapsibleContent>
-          {values.map((user) => (
-            <div
-              key={user.id}
-              className="w-full flex items-center min-w-0 gap-2 py-4"
-            >
-              <UserAvatar {...user} />
-              <span className="flex-1 min-w-0 truncate">{user.name}</span>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline">
-                  {formatThreadMembershipStatus(user.status)}
-                </Badge>
-                <TooltipWrapper content="Remove user">
-                  <Button
-                    variant="destructive"
-                    type="button"
-                    size="icon"
-                    onClick={() => onChange(user)}
-                  >
-                    <XIcon />
-                  </Button>
-                </TooltipWrapper>
+          {values.map((user) => {
+            const {
+              variant,
+              icon: Icon,
+              text,
+            } = getThreadMembershipStatusBadgeVariants(user.status);
+            return (
+              <div
+                key={user.id}
+                className="w-full flex items-center min-w-0 gap-2 py-4"
+              >
+                <UserAvatar {...user} />
+                <span className="flex-1 min-w-0 truncate">{user.name}</span>
+                <div className="flex items-center gap-2">
+                  <Badge variant={variant}>
+                    <Icon />
+                    {text}
+                  </Badge>
+                  <TooltipWrapper content="Remove user">
+                    <Button
+                      variant="destructive"
+                      type="button"
+                      size="icon"
+                      onClick={() => onChange(user)}
+                    >
+                      <XIcon />
+                    </Button>
+                  </TooltipWrapper>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </CollapsibleContent>
       </Collapsible>
 

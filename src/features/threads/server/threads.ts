@@ -39,7 +39,7 @@ export const insertThreadDb = async (
 
     const insertedThreadMemberships = await upsertThreadMembershipsDb(
       insertedThread.id,
-      collaboratorIds,
+      collaboratorIds.map((id) => ({ userId: id })),
       tx,
     );
     if (insertedThreadMemberships.length !== collaboratorIds.length) {
@@ -161,7 +161,11 @@ export const updateThreadDb = async (
     const [upsertedThreadMemberships, deletedThreadMemberships] =
       await Promise.all([
         userIdsToAdd.length
-          ? upsertThreadMembershipsDb(updatedThread.id, userIdsToAdd, tx)
+          ? upsertThreadMembershipsDb(
+              updatedThread.id,
+              userIdsToAdd.map((id) => ({ userId: id })),
+              tx,
+            )
           : [],
         userIdsToDelete.length
           ? deleteThreadMembershipsDb(updatedThread.id, userIdsToDelete, tx)
