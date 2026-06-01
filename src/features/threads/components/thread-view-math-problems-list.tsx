@@ -5,15 +5,32 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
-import { MathProblemTable } from "@/db/schema";
+import { getCurrentUser } from "@/lib/auth/helpers";
+import { getThreadMathProblems } from "@/features/math-problems/actions/actions";
 import { ChevronsUpDownIcon } from "lucide-react";
+import { Suspense } from "react";
 import { Fragment } from "react/jsx-runtime";
 
-export const ThreadViewMathProblemsList = ({
-  problems,
+export const ThreadViewMathProblemsList = (props: { threadId: string }) => {
+  return (
+    <Suspense fallback={<ThreadViewMathProblemsListLoading />}>
+      <ThreadViewMathProblemsListSuspense {...props} />
+    </Suspense>
+  );
+};
+
+const ThreadViewMathProblemsListLoading = () => {
+  return <div>loading</div>;
+};
+
+const ThreadViewMathProblemsListSuspense = async ({
+  threadId,
 }: {
-  problems: (typeof MathProblemTable.$inferSelect)[];
+  threadId: string;
 }) => {
+  const { userId } = await getCurrentUser();
+  const problems = (await getThreadMathProblems(userId, threadId)) ?? [];
+
   return problems.length ? (
     <div className="flex flex-col gap-8 w-full min-w-0 mt-4">
       {problems.map((problem) => (

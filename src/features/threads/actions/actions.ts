@@ -18,6 +18,7 @@ import {
   threadCreationUpdateSchema,
   ThreadCreationUpdateSchemaType,
 } from "./schemas";
+import { getMathProblemIdTag } from "@/features/math-problems/server/cache/math-problems";
 
 export const createThreadAction = async (
   unsafeData: ThreadCreationUpdateSchemaType,
@@ -129,6 +130,14 @@ export const getThreadAction = async (userId: string, threadId: string) => {
   });
 
   if (!existingThread) return null;
+
+  if (existingThread.mathProblems.length) {
+    cacheTag(
+      ...existingThread.mathProblems.map((problem) =>
+        getMathProblemIdTag(problem.mathProblemId),
+      ),
+    );
+  }
 
   if (existingThread.userId === userId || existingThread.isPublic)
     return existingThread;

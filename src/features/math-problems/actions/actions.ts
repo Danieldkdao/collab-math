@@ -15,11 +15,17 @@ import {
   updateMathProblemDb,
 } from "../server/math-problems";
 import { cacheTag } from "next/cache";
-import { getUserMathProblemTag } from "../server/cache/math-problems";
+import {
+  getMathProblemIdTag,
+  getThreadMathProblemTag,
+  getUserMathProblemTag,
+} from "../server/cache/math-problems";
 import { db } from "@/db/db";
-import { MathProblemTable } from "@/db/schema";
+import { MathProblemTable, ThreadMathProblemTable } from "@/db/schema";
 import { and, desc, eq, ilike } from "drizzle-orm";
 import { PAGE_SIZE } from "@/lib/constants";
+import { checkUserThreadPermissions } from "@/features/thread-memberships/lib/permissions";
+import { getUserThreadMembershipTag } from "@/features/thread-memberships/server/cache/thread-memberships";
 
 export const createMathProblemAction = async (
   unsafeData: CreateUpdateMathProblemSchemaType,
@@ -100,6 +106,43 @@ export const updateMathProblemAction = async (
       message: GENERAL_ERROR_MESSAGE,
     };
   }
+};
+
+export const getThreadMathProblems = async (
+  userId: string | null | undefined,
+  threadId: string,
+) => {
+  "use cache";
+  cacheTag(
+    getThreadMathProblemTag(threadId),
+    ...(userId ? [getUserThreadMembershipTag(userId)] : []),
+  );
+
+  if (!(await checkUserThreadPermissions(userId, threadId, ["can_view"])))
+    return null;
+
+  const mathProblems = await db
+    .select({
+      id: MathProblemTable.id,
+      userId: MathProblemTable.userId,
+      title: MathProblemTable.title,
+      content: MathProblemTable.content,
+      createdAt: MathProblemTable.createdAt,
+      updatedAt: MathProblemTable.updatedAt,
+    })
+    .from(ThreadMathProblemTable)
+    .innerJoin(
+      MathProblemTable,
+      eq(ThreadMathProblemTable.mathProblemId, MathProblemTable.id),
+    )
+    .where(eq(ThreadMathProblemTable.threadId, threadId))
+    .orderBy(desc(MathProblemTable.updatedAt), desc(MathProblemTable.createdAt));
+
+  if (mathProblems.length) {
+    cacheTag(...mathProblems.map((problem) => getMathProblemIdTag(problem.id)));
+  }
+
+  return mathProblems;
 };
 
 export const getUserMathProblemsAction = async (

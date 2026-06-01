@@ -7,6 +7,7 @@ import {
   deleteThreadMembershipsDb,
   upsertThreadMembershipsDb,
 } from "@/features/thread-memberships/server/thread-memberships";
+import { revalidateThreadMathProblemCache } from "@/features/math-problems/server/cache/math-problems";
 
 export const insertThreadDb = async (
   threadData: typeof ThreadTable.$inferInsert,
@@ -50,6 +51,7 @@ export const insertThreadDb = async (
   });
 
   revalidateThreadCache(insertedThread.id, insertedThread.userId);
+  revalidateThreadMathProblemCache(insertedThread.id);
 
   return insertedThread;
 };
@@ -183,6 +185,7 @@ export const updateThreadDb = async (
   });
 
   revalidateThreadCache(updatedThread.id, updatedThread.userId);
+  revalidateThreadMathProblemCache(updatedThread.id);
 
   return updatedThread;
 };

@@ -69,17 +69,15 @@ export const ThreadIdView = async ({
           <Tabs defaultValue="description">
             <TabsList className="w-full">
               <TabsTrigger value="description">Description</TabsTrigger>
-              <TabsTrigger value="conversations">Conversations</TabsTrigger>
+              <TabsTrigger value="comments">Comments</TabsTrigger>
               <TabsTrigger value="problems">Problems</TabsTrigger>
             </TabsList>
             <TabsContent value="description">
               <MarkdownRenderer>{thread.description}</MarkdownRenderer>
             </TabsContent>
-            <TabsContent value="conversations"></TabsContent>
+            <TabsContent value="comments"></TabsContent>
             <TabsContent value="problems">
-              <ThreadViewMathProblemsList
-                problems={thread.mathProblems.map((p) => p.mathProblem)}
-              />
+              <ThreadViewMathProblemsList threadId={thread.id} />
             </TabsContent>
           </Tabs>
         </CardContent>

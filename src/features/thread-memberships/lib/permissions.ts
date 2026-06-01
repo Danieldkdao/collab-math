@@ -5,7 +5,7 @@ import { and, eq } from "drizzle-orm";
 export type ThreadActionType = "can_view" | "can_comment";
 
 export const checkUserThreadPermissions = async (
-  userId: string,
+  userId: string | null | undefined,
   threadId: string,
   actions: ThreadActionType[],
 ) => {
@@ -20,7 +20,7 @@ export const checkUserThreadPermissions = async (
   const existingThreadMembership =
     await db.query.ThreadMembershipTable.findFirst({
       where: and(
-        eq(ThreadMembershipTable.userId, userId),
+        eq(ThreadMembershipTable.userId, userId ?? ""),
         eq(ThreadMembershipTable.threadId, existingThread.id),
       ),
       with: {
