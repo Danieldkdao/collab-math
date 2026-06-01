@@ -118,7 +118,9 @@ export const getUserMathProblemsAction = async (
     .where(
       and(
         eq(MathProblemTable.userId, userId),
-        search ? ilike(MathProblemTable.title, `%${search}%`) : undefined,
+        search?.trim()
+          ? ilike(MathProblemTable.title, `%${search.trim()}%`)
+          : undefined,
       ),
     )
     .orderBy(desc(MathProblemTable.updatedAt), desc(MathProblemTable.createdAt))

@@ -22,7 +22,7 @@ export const getUsersAction = async (
     .from(user)
     .where(
       and(
-        search ? ilike(user.name, `%${search}%`) : undefined,
+        search?.trim() ? ilike(user.name, `%${search.trim()}%`) : undefined,
         excludeCurrentUser ? not(eq(user.id, excludeCurrentUser)) : undefined,
       ),
     )

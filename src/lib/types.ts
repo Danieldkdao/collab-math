@@ -1,5 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import { Dispatch, ReactNode, SetStateAction } from "react";
+import { SORT_BY_OPTIONS } from "./constants";
 
 export type SetterType<T> = Dispatch<SetStateAction<T>>;
 
@@ -21,3 +22,5 @@ export type SidebarLink = {
         children?: ReactNode;
       };
 };
+
+export type SortByOptionsType = (typeof SORT_BY_OPTIONS)[number];

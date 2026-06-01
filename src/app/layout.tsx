@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
+import { NuqsAdapter } from "nuqs/adapters/next";
 
 const outfitSans = Outfit({
   variable: "--font-outfit-sans",
@@ -26,20 +27,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={cn(
-        "h-full",
-        "antialiased",
-        outfitSans.variable,
-        geistMono.variable,
-        "font-sans",
-      )}
-      suppressHydrationWarning
-    >
-      <body className="min-h-full flex flex-col">
-        <Providers>{children}</Providers>
-      </body>
-    </html>
+    <NuqsAdapter>
+      <html
+        lang="en"
+        className={cn(
+          "h-full",
+          "antialiased",
+          outfitSans.variable,
+          geistMono.variable,
+          "font-sans",
+        )}
+        suppressHydrationWarning
+      >
+        <body className="min-h-full flex flex-col">
+          <Providers>{children}</Providers>
+        </body>
+      </html>
+    </NuqsAdapter>
   );
 }

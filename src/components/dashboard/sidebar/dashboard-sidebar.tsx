@@ -1,6 +1,7 @@
 import { CreateMathProblemDialog } from "@/features/math-problems/components/create-math-problem-dialog";
 import { SidebarLink } from "@/lib/types";
 import {
+  LockIcon,
   MessageSquarePlusIcon,
   MessageSquareTextIcon,
   SquareFunctionIcon,
@@ -78,6 +79,14 @@ const sidebarLinks: SidebarLink[] = [
     details: {
       type: "link",
       href: "/dashboard/collaborators",
+    },
+  },
+  {
+    title: "Memberships",
+    icon: LockIcon,
+    details: {
+      type: "link",
+      href: "/dashboard/memberships",
     },
   },
 ];

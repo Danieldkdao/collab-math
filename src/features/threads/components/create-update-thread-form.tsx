@@ -199,8 +199,9 @@ export const CreateUpdateThreadForm = ({
               />
             </div>
             <FieldDescription>
-              Controls if the thread is public. Public threads are available to
-              everyone. It is currently set to being{" "}
+              Public threads are available to everyone, even those without an
+              account. Private threads are only available to you and any other
+              people that you select. It is currently set to being{" "}
               <span className="text-foreground font-semibold">
                 {isPublic ? "public" : "private"}
               </span>
