@@ -4,6 +4,7 @@ import { user } from "./user";
 import { relations } from "drizzle-orm";
 import { ThreadMathProblemTable } from "./thread-math-problem";
 import { ThreadMembershipTable } from "./thread-membership";
+import { CommentTable } from "./comment";
 
 export const ThreadTable = pgTable("threads", {
   id,
@@ -24,4 +25,5 @@ export const threadRelations = relations(ThreadTable, ({ one, many }) => ({
   }),
   mathProblems: many(ThreadMathProblemTable),
   memberships: many(ThreadMembershipTable),
+  comments: many(CommentTable),
 }));

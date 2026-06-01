@@ -3,6 +3,7 @@ import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
 import { MathProblemTable } from "./math-problem";
 import { ThreadTable } from "./thread";
 import { ThreadMembershipTable } from "./thread-membership";
+import { CommentTable } from "./comment";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -82,6 +83,7 @@ export const userRelations = relations(user, ({ many }) => ({
   mathProblems: many(MathProblemTable),
   threads: many(ThreadTable),
   threadMemberships: many(ThreadMembershipTable),
+  comments: many(CommentTable),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
