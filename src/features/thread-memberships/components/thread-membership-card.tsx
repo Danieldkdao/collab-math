@@ -14,6 +14,7 @@ import Link from "next/link";
 import { getThreadMembershipStatusBadgeVariants } from "../lib/formatters";
 import { AcceptThreadMembershipButton } from "./accept-thread-membership-button";
 import { RejectThreadMembershipButton } from "./reject-thread-membership-button";
+import { getThreadPath } from "@/features/threads/lib/routes";
 
 export const ThreadMembershipCard = ({
   threadMembershipData,
@@ -37,7 +38,7 @@ export const ThreadMembershipCard = ({
         return (
           <>
             <Button className="w-full" asChild>
-              <Link href={`/dashboard/threads/${thread.id}`}>
+              <Link href={getThreadPath(thread.id)}>
                 Open Thread
                 <ArrowRightIcon />
               </Link>
@@ -61,7 +62,7 @@ export const ThreadMembershipCard = ({
               Reject
             </RejectThreadMembershipButton>
             <Button variant="outline" className="w-full" asChild>
-              <Link href={`/dashboard/threads/${thread.id}`} target="_blank">
+              <Link href={getThreadPath(thread.id)} target="_blank">
                 <SquareArrowOutUpRightIcon />
                 View Thread
               </Link>

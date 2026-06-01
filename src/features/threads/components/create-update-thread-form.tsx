@@ -33,6 +33,7 @@ import { UserCommandSelect } from "./user-command-select";
 import { User } from "@/lib/auth/auth";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { getThreadPath } from "../lib/routes";
 
 export const CreateUpdateThreadForm = ({
   existingThread,
@@ -106,7 +107,7 @@ export const CreateUpdateThreadForm = ({
     } else {
       toast.success(response.message);
       if (response.threadId) {
-        router.push(`/dashboard/threads/${response.threadId}`);
+        router.push(getThreadPath(response.threadId));
       }
       doAfterAction?.();
     }

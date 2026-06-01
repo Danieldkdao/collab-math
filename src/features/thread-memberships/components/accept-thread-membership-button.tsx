@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { ComponentProps, ReactNode } from "react";
 import { toast } from "sonner";
 import { updateThreadMembershipAction } from "../actions/actions";
+import { getThreadPath } from "@/features/threads/lib/routes";
 
 export const AcceptThreadMembershipButton = ({
   threadId,
@@ -37,7 +38,7 @@ export const AcceptThreadMembershipButton = ({
       toast.error(response.message);
     } else {
       toast.success("Invitation accepted successfully!");
-      router.push(`/dashboard/threads/${threadId}`);
+      router.push(getThreadPath(threadId));
     }
 
     setIsPending(false);

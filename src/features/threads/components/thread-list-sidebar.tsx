@@ -7,6 +7,7 @@ import { getUserThreadsAction } from "../actions/actions";
 import { SidebarLinkList } from "@/components/dashboard/sidebar/sidebar-link-list";
 import { MessageSquareIcon } from "lucide-react";
 import { Suspense } from "react";
+import { getThreadPath } from "../lib/routes";
 
 export const ThreadListSidebar = async () => {
   return (
@@ -34,7 +35,7 @@ const ThreadListSidebarSuspense = async () => {
       links={threads.map((thread) => ({
         title: thread.title,
         icon: MessageSquareIcon,
-        details: { type: "link", href: `/dashboard/threads/${thread.id}` },
+        details: { type: "link", href: getThreadPath(thread.id) },
       }))}
     />
   ) : (
@@ -43,7 +44,7 @@ const ThreadListSidebarSuspense = async () => {
         No Threads Yet
       </span>
       <span className="text-sm text-muted-foreground text-center">
-        You haven't created any threads yet.{" "}
+        You haven&apos;t created any threads yet.{" "}
       </span>
     </div>
   );

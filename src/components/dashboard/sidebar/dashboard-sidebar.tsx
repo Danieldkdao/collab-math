@@ -22,6 +22,7 @@ import { SidebarLinkList } from "./sidebar-link-list";
 import { ThreadListSidebar } from "@/features/threads/components/thread-list-sidebar";
 import { CreateThreadDialog } from "@/features/threads/components/create-thread-dialog";
 import Link from "next/link";
+import { THREADS_PATH } from "@/features/threads/lib/routes";
 
 const quickActionLinks: SidebarLink[] = [
   {
@@ -62,7 +63,7 @@ const sidebarLinks: SidebarLink[] = [
     icon: MessageSquareTextIcon,
     details: {
       type: "link",
-      href: "/dashboard/threads",
+      href: THREADS_PATH,
     },
   },
   {
