@@ -22,10 +22,21 @@ import {
 } from "../server/cache/math-problems";
 import { db } from "@/db/db";
 import { MathProblemTable, ThreadMathProblemTable } from "@/db/schema";
-import { and, desc, eq, ilike } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  ilike,
+  or,
+  SQL,
+} from "drizzle-orm";
 import { PAGE_SIZE } from "@/lib/constants";
 import { checkUserThreadPermissions } from "@/features/thread-memberships/lib/permissions";
 import { getUserThreadMembershipTag } from "@/features/thread-memberships/server/cache/thread-memberships";
+import { MathProblemSortByOptionType } from "../lib/params";
 
 export const createMathProblemAction = async (
   unsafeData: CreateUpdateMathProblemSchemaType,
@@ -136,7 +147,10 @@ export const getThreadMathProblems = async (
       eq(ThreadMathProblemTable.mathProblemId, MathProblemTable.id),
     )
     .where(eq(ThreadMathProblemTable.threadId, threadId))
-    .orderBy(desc(MathProblemTable.updatedAt), desc(MathProblemTable.createdAt));
+    .orderBy(
+      desc(MathProblemTable.updatedAt),
+      desc(MathProblemTable.createdAt),
+    );
 
   if (mathProblems.length) {
     cacheTag(...mathProblems.map((problem) => getMathProblemIdTag(problem.id)));
@@ -147,28 +161,68 @@ export const getThreadMathProblems = async (
 
 export const getUserMathProblemsAction = async (
   userId: string,
-  page: number,
-  search?: string,
+  filterOptions: {
+    search: string;
+    page: number;
+    sortBy: MathProblemSortByOptionType;
+  },
 ) => {
   "use cache";
   cacheTag(getUserMathProblemTag(userId));
 
-  const offset = page * PAGE_SIZE;
+  const { search, page, sortBy } = filterOptions;
+
+  const offset = (page - 1) * PAGE_SIZE;
+
+  const usageInThreads = count(ThreadMathProblemTable.mathProblemId);
+
+  const sortByMap: Record<MathProblemSortByOptionType, SQL<unknown>> = {
+    most_recent: desc(MathProblemTable.createdAt),
+    oldest: asc(MathProblemTable.createdAt),
+    most_used: desc(usageInThreads),
+  };
 
   const mathProblems = await db
-    .select()
+    .select({
+      ...getTableColumns(MathProblemTable),
+      totalUsageInThreads: usageInThreads,
+    })
     .from(MathProblemTable)
+    .innerJoin(
+      ThreadMathProblemTable,
+      eq(ThreadMathProblemTable.mathProblemId, MathProblemTable.id),
+    )
     .where(
       and(
         eq(MathProblemTable.userId, userId),
-        search?.trim()
-          ? ilike(MathProblemTable.title, `%${search.trim()}%`)
+        search.trim()
+          ? or(
+              ilike(MathProblemTable.title, `%${search.trim()}%`),
+              ilike(MathProblemTable.content, `%${search.trim()}%`),
+            )
           : undefined,
       ),
     )
-    .orderBy(desc(MathProblemTable.updatedAt), desc(MathProblemTable.createdAt))
+    .groupBy(MathProblemTable.id)
+    .orderBy(sortByMap[sortBy])
     .offset(offset)
     .limit(PAGE_SIZE);
 
-  return mathProblems;
+  const [mathProblemCount] = await db
+    .select({
+      total: count(),
+    })
+    .from(MathProblemTable)
+    .where(eq(MathProblemTable.userId, userId));
+
+  const hasPrevPage = page > 1;
+  const hasNextPage = page * PAGE_SIZE < mathProblemCount.total;
+
+  return {
+    mathProblems,
+    metadata: {
+      hasPrevPage,
+      hasNextPage,
+    },
+  };
 };

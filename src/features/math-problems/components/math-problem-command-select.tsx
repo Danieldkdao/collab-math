@@ -60,15 +60,15 @@ export const MathProblemCommandSelect = ({
   } = useInfiniteQuery({
     queryKey: ["mathProblems", session?.user.id, debouncedSearch[0]],
     queryFn: ({ pageParam }) =>
-      getUserMathProblemsAction(
-        session?.user.id ?? "",
-        pageParam,
-        debouncedSearch[0],
-      ),
+      getUserMathProblemsAction(session?.user.id ?? "", {
+        page: pageParam,
+        search: debouncedSearch[0],
+        sortBy: "most_recent",
+      }),
     enabled: !!session?.user.id,
-    initialPageParam: 0,
+    initialPageParam: 1,
     getNextPageParam: (lastPage, _, lastPageParam) => {
-      if (lastPage.length < PAGE_SIZE) {
+      if (lastPage.mathProblems.length < PAGE_SIZE) {
         return undefined;
       }
       return lastPageParam + 1;
@@ -76,7 +76,7 @@ export const MathProblemCommandSelect = ({
   });
 
   const mathProblems = useMemo(() => {
-    return data?.pages.flatMap((page) => page) ?? [];
+    return data?.pages.flatMap((page) => page.mathProblems) ?? [];
   }, [data]);
 
   const fetchMoreMathProblemsIfNeeded = useCallback(() => {
