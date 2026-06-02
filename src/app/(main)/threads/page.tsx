@@ -2,7 +2,7 @@ import { MarkdownRenderer } from "@/components/markdown/markdown-renderer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CreateThreadDialog } from "@/features/threads/components/create-thread-dialog";
-import { getUserThreadsAction } from "@/features/threads/actions/actions";
+import { getUserSidebarThreadsAction } from "@/features/threads/actions/actions";
 import { getThreadPath } from "@/features/threads/lib/routes";
 import { getCurrentUser } from "@/lib/auth/helpers";
 import { ArrowRightIcon, MessageSquarePlusIcon } from "lucide-react";
@@ -12,7 +12,7 @@ const ThreadsPage = async () => {
   const { userId } = await getCurrentUser();
   if (!userId) return null;
 
-  const threads = await getUserThreadsAction(userId);
+  const threads = await getUserSidebarThreadsAction(userId);
 
   return (
     <div className="flex flex-col gap-6">

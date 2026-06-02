@@ -21,4 +21,5 @@ export const filterSearchParams = {
     .withOptions({ clearOnDefault: true }),
 };
 
-export const loadSearchParams = createLoader(filterSearchParams);
+export const loadThreadMembershipSearchParams =
+  createLoader(filterSearchParams);

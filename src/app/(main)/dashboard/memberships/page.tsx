@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getUserThreadMembershipsAction } from "@/features/thread-memberships/actions/actions";
 import { ThreadMembershipFilters } from "@/features/thread-memberships/components/thread-membership-filters";
 import { ThreadMembershipsInfiniteCardList } from "@/features/thread-memberships/components/thread-memberships-infinite-card-list";
-import { loadSearchParams } from "@/features/thread-memberships/lib/params";
+import { loadThreadMembershipSearchParams } from "@/features/thread-memberships/lib/params";
 import { getCurrentUser } from "@/lib/auth/helpers";
 import { DEFAULT_PAGE } from "@/lib/constants";
 import { SearchParams } from "nuqs";
@@ -84,7 +84,7 @@ const UserMembershipCardSkeleton = () => {
 const UserMembershipsSuspense = async ({
   searchParams,
 }: UserMembershipsParams) => {
-  const filters = await loadSearchParams(searchParams);
+  const filters = await loadThreadMembershipSearchParams(searchParams);
 
   const { userId } = await getCurrentUser();
   if (!userId) return null;

@@ -1,38 +1,38 @@
 "use client";
 
 import { SearchNotFound } from "@/components/search-not-found";
-import { ThreadMembershipTable, ThreadTable } from "@/db/schema";
+import { ThreadTable } from "@/db/schema";
 import { DEFAULT_PAGE } from "@/lib/constants";
 import { Loader2Icon } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { getUserThreadMembershipsAction } from "../actions/actions";
-import { useThreadMembershipParams } from "../hooks/use-thread-membership-params";
-import { ThreadMembershipCard } from "./thread-membership-card";
+import { getUserThreadsAction } from "../actions/actions";
+import { useThreadParams } from "../hooks/use-thread-params";
+import { ThreadCard } from "./thread-card";
 
-export const ThreadMembershipsInfiniteCardList = ({
+export const UserThreadInfiniteCardList = ({
   userId,
-  initialThreadMemberships,
+  initialThreads,
   initialHasNextPage,
 }: {
   userId: string;
-  initialThreadMemberships: (typeof ThreadMembershipTable.$inferSelect & {
-    thread: typeof ThreadTable.$inferSelect;
+  initialThreads: (typeof ThreadTable.$inferSelect & {
+    totalCollaborators: number;
+    totalComments: number;
   })[];
   initialHasNextPage: boolean;
 }) => {
-  const [filters] = useThreadMembershipParams();
-  const [threadMemberships, setThreadMemberships] = useState(
-    initialThreadMemberships,
-  );
+  const [filters] = useThreadParams();
+  const [threads, setThreads] = useState(initialThreads);
   const [page, setPage] = useState(DEFAULT_PAGE);
   const [hasNextPage, setHasNextPage] = useState(initialHasNextPage);
   const [isPending, startTransition] = useTransition();
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    setThreadMemberships(initialThreadMemberships);
+    setThreads(initialThreads);
+    setPage(DEFAULT_PAGE);
     setHasNextPage(initialHasNextPage);
-  }, [initialThreadMemberships, initialHasNextPage]);
+  }, [initialThreads, initialHasNextPage]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -45,17 +45,14 @@ export const ThreadMembershipsInfiniteCardList = ({
         startTransition(async () => {
           const nextPage = page + 1;
 
-          const data = await getUserThreadMembershipsAction(userId, {
-            ...filters,
+          const { threads, metadata } = await getUserThreadsAction(userId, {
             page: nextPage,
+            ...filters,
           });
 
-          setThreadMemberships((current) => [
-            ...current,
-            ...data.threadMemberships,
-          ]);
+          setThreads((prev) => [...prev, ...threads]);
           setPage(nextPage);
-          setHasNextPage(data.metadata.hasNextPage);
+          setHasNextPage(metadata.hasNextPage);
         });
       },
       {
@@ -64,18 +61,14 @@ export const ThreadMembershipsInfiniteCardList = ({
     );
 
     observer.observe(sentinel);
-
     return () => observer.disconnect();
   }, [filters, page, hasNextPage, isPending]);
 
-  return threadMemberships.length ? (
+  return threads.length ? (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 w-full">
-        {threadMemberships.map((membership) => (
-          <ThreadMembershipCard
-            key={membership.threadId}
-            threadMembershipData={membership}
-          />
+        {threads.map((thread) => (
+          <ThreadCard key={thread.id} thread={thread} />
         ))}
       </div>
       <div ref={sentinelRef} className="flex justify-center py-6">
@@ -85,6 +78,6 @@ export const ThreadMembershipsInfiniteCardList = ({
       </div>
     </div>
   ) : (
-    <SearchNotFound subject="thread memberships" />
+    <SearchNotFound subject="threads" />
   );
 };

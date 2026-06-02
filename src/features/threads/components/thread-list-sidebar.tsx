@@ -3,7 +3,7 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { getCurrentUser } from "@/lib/auth/helpers";
-import { getUserThreadsAction } from "../actions/actions";
+import { getUserSidebarThreadsAction } from "../actions/actions";
 import { SidebarLinkList } from "@/components/dashboard/sidebar/sidebar-link-list";
 import { MessageSquareIcon } from "lucide-react";
 import { Suspense } from "react";
@@ -28,7 +28,7 @@ const ThreadListSidebarSuspense = async () => {
   const { userId } = await getCurrentUser();
   if (!userId) return null;
 
-  const threads = await getUserThreadsAction(userId);
+  const threads = await getUserSidebarThreadsAction(userId);
 
   return threads.length ? (
     <SidebarLinkList
