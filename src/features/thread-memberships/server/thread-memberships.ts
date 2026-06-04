@@ -6,6 +6,7 @@ import { revalidateThreadCache } from "@/features/threads/server/cache/threads";
 
 export const updateThreadMembershipDb = async (
   threadId: string,
+  threadOwnerId: string,
   userId: string,
   data: Partial<typeof ThreadMembershipTable.$inferSelect>,
 ) => {
@@ -22,6 +23,10 @@ export const updateThreadMembershipDb = async (
 
   revalidateThreadMembershipCache(
     updatedThreadMembership.userId,
+    updatedThreadMembership.threadId,
+  );
+  revalidateThreadMembershipCache(
+    threadOwnerId,
     updatedThreadMembership.threadId,
   );
   revalidateThreadCache(

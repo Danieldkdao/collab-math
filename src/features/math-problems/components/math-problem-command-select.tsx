@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/command";
 import { ThreadMathProblemSchemaType } from "@/features/threads/actions/schemas";
 import { useAuthSession } from "@/hooks/use-auth-session";
-import { PAGE_SIZE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -68,7 +67,7 @@ export const MathProblemCommandSelect = ({
     enabled: !!session?.user.id,
     initialPageParam: 1,
     getNextPageParam: (lastPage, _, lastPageParam) => {
-      if (lastPage.mathProblems.length < PAGE_SIZE) {
+      if (!lastPage.metadata.hasNextPage) {
         return undefined;
       }
       return lastPageParam + 1;

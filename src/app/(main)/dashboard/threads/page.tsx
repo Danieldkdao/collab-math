@@ -88,6 +88,7 @@ const UserThreadsSuspense = async ({ searchParams }: UserMembershipsParams) => {
     <div className="flex flex-col gap-6">
       <UserThreadFilters />
       <UserThreadInfiniteCardList
+        key={`${filters.search}:${filters.sortBy}:${filters.filterBy}`}
         userId={userId}
         initialThreads={threads}
         initialHasNextPage={metadata.hasNextPage}

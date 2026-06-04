@@ -1,7 +1,7 @@
 import { getGlobalTag, getThreadIdResourceTag } from "@/lib/data-cache";
 import { revalidateTag } from "next/cache";
 
-export const getCommentGlobalTag = () => {
+const getCommentGlobalTag = () => {
   return getGlobalTag("comments");
 };
 

@@ -46,6 +46,18 @@ export const getUserThreadMembershipsAction = async (
   "use cache";
   cacheTag(getUserThreadMembershipTag(userId));
 
+  const searchFilter = filterOptions.search.trim()
+    ? ilike(ThreadTable.title, `%${filterOptions.search.trim()}%`)
+    : undefined;
+  const statusFilter = filterOptions.membershipStatuses.length
+    ? inArray(ThreadMembershipTable.status, filterOptions.membershipStatuses)
+    : undefined;
+  const threadMembershipsWhere = and(
+    eq(ThreadMembershipTable.userId, userId),
+    statusFilter,
+    searchFilter,
+  );
+
   const offset = (filterOptions.page - 1) * PAGE_SIZE;
 
   const sortByMap: Record<SortByOptionsType, SQL<unknown>> = {
@@ -60,20 +72,7 @@ export const getUserThreadMembershipsAction = async (
     })
     .from(ThreadMembershipTable)
     .innerJoin(ThreadTable, eq(ThreadTable.id, ThreadMembershipTable.threadId))
-    .where(
-      and(
-        eq(ThreadMembershipTable.userId, userId),
-        filterOptions.membershipStatuses.length
-          ? inArray(
-              ThreadMembershipTable.status,
-              filterOptions.membershipStatuses,
-            )
-          : undefined,
-        filterOptions.search.trim()
-          ? ilike(ThreadTable.title, `%${filterOptions.search.trim()}%`)
-          : undefined,
-      ),
-    )
+    .where(threadMembershipsWhere)
     .orderBy(sortByMap[filterOptions.sortBy])
     .offset(offset)
     .limit(PAGE_SIZE);
@@ -83,12 +82,12 @@ export const getUserThreadMembershipsAction = async (
       total: count(),
     })
     .from(ThreadMembershipTable)
-    .where(eq(ThreadMembershipTable.userId, userId));
+    .innerJoin(ThreadTable, eq(ThreadTable.id, ThreadMembershipTable.threadId))
+    .where(threadMembershipsWhere);
 
   const hasPrevPage = filterOptions.page > 1;
   const hasNextPage =
-    threadMemberships.length * filterOptions.page <
-    totalThreadMemberships.total;
+    filterOptions.page * PAGE_SIZE < totalThreadMemberships.total;
 
   return {
     threadMemberships,
@@ -133,6 +132,7 @@ export const updateThreadMembershipAction = async (
   try {
     const updatedThreadMembership = await updateThreadMembershipDb(
       existingThread.id,
+      existingThread.userId,
       userId,
       data,
     );

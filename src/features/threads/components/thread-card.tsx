@@ -25,7 +25,7 @@ export const ThreadCard = ({
     <Card>
       <CardContent className="flex min-w-0 flex-col md:flex-row md:items-center gap-4">
         <div className="flex min-w-0 flex-col gap-4 flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col items-start md:flex-row md:items-center gap-2">
             <MarkdownRenderer
               variant="title"
               className="w-auto max-w-full shrink truncate"

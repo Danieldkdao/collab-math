@@ -175,6 +175,12 @@ export const getUserMathProblemsAction = async (
   const offset = (page - 1) * PAGE_SIZE;
 
   const usageInThreads = count(ThreadMathProblemTable.mathProblemId);
+  const searchFilter = search.trim()
+    ? or(
+        ilike(MathProblemTable.title, `%${search.trim()}%`),
+        ilike(MathProblemTable.content, `%${search.trim()}%`),
+      )
+    : undefined;
 
   const sortByMap: Record<MathProblemSortByOptionType, SQL<unknown>> = {
     most_recent: desc(MathProblemTable.createdAt),
@@ -188,21 +194,11 @@ export const getUserMathProblemsAction = async (
       totalUsageInThreads: usageInThreads,
     })
     .from(MathProblemTable)
-    .innerJoin(
+    .leftJoin(
       ThreadMathProblemTable,
       eq(ThreadMathProblemTable.mathProblemId, MathProblemTable.id),
     )
-    .where(
-      and(
-        eq(MathProblemTable.userId, userId),
-        search.trim()
-          ? or(
-              ilike(MathProblemTable.title, `%${search.trim()}%`),
-              ilike(MathProblemTable.content, `%${search.trim()}%`),
-            )
-          : undefined,
-      ),
-    )
+    .where(and(eq(MathProblemTable.userId, userId), searchFilter))
     .groupBy(MathProblemTable.id)
     .orderBy(sortByMap[sortBy])
     .offset(offset)
@@ -213,7 +209,7 @@ export const getUserMathProblemsAction = async (
       total: count(),
     })
     .from(MathProblemTable)
-    .where(eq(MathProblemTable.userId, userId));
+    .where(and(eq(MathProblemTable.userId, userId), searchFilter));
 
   const hasPrevPage = page > 1;
   const hasNextPage = page * PAGE_SIZE < mathProblemCount.total;

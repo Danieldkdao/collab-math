@@ -21,7 +21,6 @@ import { UserAvatar } from "@/components/user-avatar";
 import { getThreadMembershipStatusBadgeVariants } from "@/features/thread-memberships/lib/formatters";
 import { getUsersAction } from "@/features/users/actions/actions";
 import { useAuthSession } from "@/hooks/use-auth-session";
-import { PAGE_SIZE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -62,7 +61,7 @@ export const UserCommandSelect = ({
     enabled: !!session?.user.id,
     initialPageParam: 0,
     getNextPageParam: (lastPage, _, lastPageParam) => {
-      if (lastPage.length < PAGE_SIZE) {
+      if (!lastPage.metadata.hasNextPage) {
         return undefined;
       }
       return lastPageParam + 1;
@@ -70,7 +69,7 @@ export const UserCommandSelect = ({
   });
 
   const users = useMemo(() => {
-    return data?.pages.flatMap((page) => page) ?? [];
+    return data?.pages.flatMap((page) => page.users) ?? [];
   }, [data]);
 
   const fetchMoreUsersIfNeeded = useCallback(() => {

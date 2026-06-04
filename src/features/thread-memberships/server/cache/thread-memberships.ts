@@ -5,7 +5,7 @@ export const getUserThreadMembershipTag = (userId: string) => {
   return getUserIdResourceTag("thread_memberships", userId);
 };
 
-export const getThreadMembershipTag = (threadId: string) => {
+const getThreadMembershipTag = (threadId: string) => {
   return getThreadIdResourceTag("thread_memberships", threadId);
 };
 

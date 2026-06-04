@@ -102,6 +102,7 @@ const UserMathProblemsSuspense = async ({
     <div className="flex flex-col gap-6">
       <UserMathProblemFilters />
       <UserMathProblemInfiniteCardList
+        key={`${filters.search}:${filters.sortBy}`}
         userId={userId}
         initialMathProblems={mathProblems}
         initialHasNextPage={metadata.hasNextPage}

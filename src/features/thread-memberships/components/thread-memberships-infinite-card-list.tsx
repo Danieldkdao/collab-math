@@ -30,11 +30,6 @@ export const ThreadMembershipsInfiniteCardList = ({
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    setThreadMemberships(initialThreadMemberships);
-    setHasNextPage(initialHasNextPage);
-  }, [initialThreadMemberships, initialHasNextPage]);
-
-  useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel || !hasNextPage || isPending) return;
 
@@ -66,7 +61,7 @@ export const ThreadMembershipsInfiniteCardList = ({
     observer.observe(sentinel);
 
     return () => observer.disconnect();
-  }, [filters, page, hasNextPage, isPending]);
+  }, [filters, page, hasNextPage, isPending, userId]);
 
   return threadMemberships.length ? (
     <div className="space-y-6">

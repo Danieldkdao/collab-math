@@ -1,27 +1,29 @@
 "use client";
 
-import { MathProblemTable } from "@/db/schema";
-import { DEFAULT_PAGE } from "@/lib/constants";
+import { User } from "@/lib/auth/auth";
+import { useCollaboratorParams } from "../hooks/use-collaborator-params";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { useMathProblemParams } from "../hooks/use-math-problem-params";
-import { getUserMathProblemsAction } from "../actions/actions";
-import { Loader2Icon } from "lucide-react";
+import { DEFAULT_PAGE } from "@/lib/constants";
+import { getCollaboratorsAction } from "../actions/actions";
 import { SearchNotFound } from "@/components/search-not-found";
-import { MathProblemCard } from "./math-problem-card";
+import { Loader2Icon } from "lucide-react";
+import { CollaboratorCard } from "./collaborator-card";
 
-export const UserMathProblemInfiniteCardList = ({
-  userId,
-  initialMathProblems,
+export const CollaboratorInfiniteCardList = ({
+  initialCollaborators,
   initialHasNextPage,
+  userId,
 }: {
-  userId: string;
-  initialMathProblems: (typeof MathProblemTable.$inferSelect & {
-    totalUsageInThreads: number;
-  })[];
+  initialCollaborators: {
+    collaboratorId: string;
+    user: User;
+    totalCollaborations: number;
+  }[];
   initialHasNextPage: boolean;
+  userId: string;
 }) => {
-  const [filters] = useMathProblemParams();
-  const [mathProblems, setMathProblems] = useState(initialMathProblems);
+  const [filters] = useCollaboratorParams();
+  const [collaborators, setCollaborators] = useState(initialCollaborators);
   const [hasNextPage, setHasNextPage] = useState(initialHasNextPage);
   const [page, setPage] = useState(DEFAULT_PAGE);
   const [isPending, startTransition] = useTransition();
@@ -29,7 +31,8 @@ export const UserMathProblemInfiniteCardList = ({
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
-    if (!sentinel || !hasNextPage || isPending) return;
+
+    if (!sentinel || isPending || !hasNextPage) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -38,13 +41,13 @@ export const UserMathProblemInfiniteCardList = ({
         startTransition(async () => {
           const nextPage = page + 1;
 
-          const { mathProblems, metadata } = await getUserMathProblemsAction(
+          const { collaborators, metadata } = await getCollaboratorsAction(
             userId,
             { ...filters, page: nextPage },
           );
-          setMathProblems((prev) => [...prev, ...mathProblems]);
-          setPage(nextPage);
+          setCollaborators((prev) => [...prev, ...collaborators]);
           setHasNextPage(metadata.hasNextPage);
+          setPage(nextPage);
         });
       },
       {
@@ -57,11 +60,14 @@ export const UserMathProblemInfiniteCardList = ({
     return () => observer.disconnect();
   }, [filters, page, hasNextPage, isPending, userId]);
 
-  return mathProblems.length ? (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 w-full">
-        {mathProblems.map((mathProblem) => (
-          <MathProblemCard key={mathProblem.id} mathProblem={mathProblem} />
+  return collaborators.length ? (
+    <div className="space-y-6 w-full">
+      <div className="grid grid-cols-1 @lg:grid-cols-2 gap-4 w-full">
+        {collaborators.map((collaborator) => (
+          <CollaboratorCard
+            key={collaborator.collaboratorId}
+            collaborator={collaborator}
+          />
         ))}
       </div>
       <div ref={sentinelRef} className="flex justify-center py-6">
@@ -71,6 +77,6 @@ export const UserMathProblemInfiniteCardList = ({
       </div>
     </div>
   ) : (
-    <SearchNotFound subject="math problems" />
+    <SearchNotFound subject="collaborators" />
   );
 };

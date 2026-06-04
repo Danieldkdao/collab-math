@@ -12,7 +12,7 @@ export const THREAD_SORT_BY_OPTIONS = [
 ] as const;
 export type ThreadSortByOptionType = (typeof THREAD_SORT_BY_OPTIONS)[number];
 
-export const filterSearchParams = {
+const filterSearchParams = {
   search: parseAsString.withDefault("").withOptions({ clearOnDefault: true }),
   sortBy: parseAsStringEnum([...THREAD_SORT_BY_OPTIONS])
     .withDefault("most_recent")

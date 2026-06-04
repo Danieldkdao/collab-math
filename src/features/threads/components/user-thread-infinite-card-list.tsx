@@ -29,12 +29,6 @@ export const UserThreadInfiniteCardList = ({
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    setThreads(initialThreads);
-    setPage(DEFAULT_PAGE);
-    setHasNextPage(initialHasNextPage);
-  }, [initialThreads, initialHasNextPage]);
-
-  useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel || !hasNextPage || isPending) return;
 
@@ -62,7 +56,7 @@ export const UserThreadInfiniteCardList = ({
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [filters, page, hasNextPage, isPending]);
+  }, [filters, page, hasNextPage, isPending, userId]);
 
   return threads.length ? (
     <div className="space-y-6">

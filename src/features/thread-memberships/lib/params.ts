@@ -7,7 +7,7 @@ import {
   parseAsStringEnum,
 } from "nuqs/server";
 
-export const filterSearchParams = {
+const filterSearchParams = {
   search: parseAsString.withDefault("").withOptions({ clearOnDefault: true }),
   sortBy: parseAsStringEnum([...SORT_BY_OPTIONS])
     .withDefault("most_recent")

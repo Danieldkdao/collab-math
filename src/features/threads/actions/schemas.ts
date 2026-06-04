@@ -1,7 +1,7 @@
 import { threadMembershipStatuses } from "@/db/shared";
 import z from "zod";
 
-export const threadMathProblemSchema = z.object({
+const threadMathProblemSchema = z.object({
   id: z.uuid(),
   title: z.string().min(1),
 });
@@ -9,7 +9,7 @@ export type ThreadMathProblemSchemaType = z.infer<
   typeof threadMathProblemSchema
 >;
 
-export const threadCollaboratorSchema = z.object({
+const threadCollaboratorSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   image: z.string().nullish().optional(),

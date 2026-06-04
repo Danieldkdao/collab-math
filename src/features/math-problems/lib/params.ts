@@ -8,7 +8,7 @@ export const MATH_PROBLEM_SORT_BY_OPTIONS = [
 export type MathProblemSortByOptionType =
   (typeof MATH_PROBLEM_SORT_BY_OPTIONS)[number];
 
-export const filterSearchParams = {
+const filterSearchParams = {
   search: parseAsString.withDefault("").withOptions({ clearOnDefault: true }),
   sortBy: parseAsStringEnum([...MATH_PROBLEM_SORT_BY_OPTIONS])
     .withDefault("most_recent")

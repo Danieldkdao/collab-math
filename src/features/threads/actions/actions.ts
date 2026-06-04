@@ -183,6 +183,12 @@ export const getUserThreadsAction = async (
 
   const collaboratorCount = countDistinct(ThreadMembershipTable.userId);
   const commentCount = countDistinct(CommentTable.id);
+  const searchFilter = search.trim()
+    ? or(
+        ilike(ThreadTable.title, `%${search.trim()}%`),
+        ilike(ThreadTable.description, `%${search.trim()}%`),
+      )
+    : undefined;
 
   const offset = (page - 1) * PAGE_SIZE;
 
@@ -215,16 +221,7 @@ export const getUserThreadsAction = async (
     )
     .leftJoin(CommentTable, eq(CommentTable.threadId, ThreadTable.id))
     .where(
-      and(
-        eq(ThreadTable.userId, userId),
-        search.trim()
-          ? or(
-              ilike(ThreadTable.title, `%${search.trim()}%`),
-              ilike(ThreadTable.description, `%${search.trim()}%`),
-            )
-          : undefined,
-        filterByMap[filterBy],
-      ),
+      and(eq(ThreadTable.userId, userId), searchFilter, filterByMap[filterBy]),
     )
     .groupBy(ThreadTable.id)
     .orderBy(sortByMap[sortBy])
@@ -236,7 +233,9 @@ export const getUserThreadsAction = async (
       total: count(),
     })
     .from(ThreadTable)
-    .where(eq(ThreadTable.userId, userId));
+    .where(
+      and(eq(ThreadTable.userId, userId), searchFilter, filterByMap[filterBy]),
+    );
 
   const hasPrevPage = page > 1;
   const hasNextPage = PAGE_SIZE * page < threadCount.total;
@@ -257,7 +256,8 @@ export const getUserSidebarThreadsAction = async (userId: string) => {
   const threads = await db
     .select()
     .from(ThreadTable)
-    .where(eq(ThreadTable.userId, userId));
+    .where(eq(ThreadTable.userId, userId))
+    .limit(PAGE_SIZE);
 
   return threads;
 };

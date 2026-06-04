@@ -6,7 +6,7 @@ import {
 } from "@/lib/data-cache";
 import { revalidateTag } from "next/cache";
 
-export const getMathProblemGlobalTag = () => {
+const getMathProblemGlobalTag = () => {
   return getGlobalTag("math_problems");
 };
 

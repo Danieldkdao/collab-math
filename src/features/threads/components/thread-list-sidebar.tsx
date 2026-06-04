@@ -8,11 +8,21 @@ import { SidebarLinkList } from "@/components/dashboard/sidebar/sidebar-link-lis
 import { MessageSquareIcon } from "lucide-react";
 import { Suspense } from "react";
 import { getThreadPath } from "../lib/routes";
+import Link from "next/link";
 
 export const ThreadListSidebar = async () => {
   return (
     <SidebarGroupContent>
-      <SidebarGroupLabel>Threads</SidebarGroupLabel>
+      <div className="flex items-center gap-2 justify-between">
+        <SidebarGroupLabel>Recent Threads</SidebarGroupLabel>
+        <Link
+          href="/dashboard/threads"
+          className="text-xs font-medium cursor-pointer text-muted-foreground hover:underline mr-2"
+        >
+          View all
+        </Link>
+      </div>
+
       <Suspense fallback={<ThreadListSidebarLoading />}>
         <ThreadListSidebarSuspense />
       </Suspense>
