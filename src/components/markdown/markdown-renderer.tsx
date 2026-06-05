@@ -14,6 +14,7 @@ import {
   markdownRemarkPlugins,
   rehypeSanitize,
 } from "./callouts";
+import { MarkdownImage } from "./markdown-image";
 
 const markdownThemeVars = {
   "--color-canvas-default": "transparent",
@@ -118,6 +119,7 @@ const markdownComponents = {
   hr: (props: ComponentPropsWithoutRef<"hr">) => (
     <hr {...props} className="my-8 border-border" />
   ),
+  img: MarkdownImage,
   code: ({
     children,
     className,

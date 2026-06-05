@@ -35,6 +35,7 @@ import {
   rehypeSanitize,
 } from "./callouts";
 import { katexMacros, rehypeKatexOptions } from "./katex-config";
+import { MarkdownImage } from "./markdown-image";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), {
   ssr: false,
@@ -218,6 +219,7 @@ export const MarkdownEditor = ({
               {children}
             </li>
           )) as PreviewComponents["li"],
+          img: MarkdownImage as PreviewComponents["img"],
           code: (({
             children,
             className,

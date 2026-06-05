@@ -45,12 +45,12 @@ export const UpdateThreadDialog = ({
   const trigger = tooltipContent ? (
     <Tooltip>
       <TooltipTrigger asChild>
-        <DialogTrigger>{children}</DialogTrigger>
+        <DialogTrigger asChild>{children}</DialogTrigger>
       </TooltipTrigger>
       <TooltipContent>{tooltipContent}</TooltipContent>
     </Tooltip>
   ) : (
-    <DialogTrigger>{children}</DialogTrigger>
+    <DialogTrigger asChild>{children}</DialogTrigger>
   );
 
   return (
