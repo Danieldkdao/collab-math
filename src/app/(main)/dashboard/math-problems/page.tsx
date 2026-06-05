@@ -97,12 +97,15 @@ const UserMathProblemsSuspense = async ({
     ...filters,
     page: DEFAULT_PAGE,
   });
+  const listKey = mathProblems
+    .map((problem) => `${problem.id}:${problem.updatedAt.getTime()}`)
+    .join(",");
 
   return (
     <div className="flex flex-col gap-6">
       <UserMathProblemFilters />
       <UserMathProblemInfiniteCardList
-        key={`${filters.search}:${filters.sortBy}`}
+        key={`${filters.search}:${filters.sortBy}:${listKey}`}
         userId={userId}
         initialMathProblems={mathProblems}
         initialHasNextPage={metadata.hasNextPage}

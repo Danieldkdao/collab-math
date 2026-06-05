@@ -1,7 +1,7 @@
 import { db } from "@/db/db";
 import { MathProblemTable } from "@/db/schema";
-import { revalidateMathProblemCache } from "./cache/math-problems";
 import { and, eq } from "drizzle-orm";
+import { revalidateMathProblemCache } from "./cache/math-problems";
 
 export const insertMathProblemDb = async (
   mathProblemData: typeof MathProblemTable.$inferInsert,
@@ -38,4 +38,23 @@ export const updateMathProblemDb = async (
   revalidateMathProblemCache(updatedMathProblem.id, updatedMathProblem.userId);
 
   return updatedMathProblem;
+};
+
+export const deleteMathProblemDb = async (
+  userId: string,
+  mathProblemId: string,
+) => {
+  const [deletedMathProblem] = await db
+    .delete(MathProblemTable)
+    .where(
+      and(
+        eq(MathProblemTable.userId, userId),
+        eq(MathProblemTable.id, mathProblemId),
+      ),
+    )
+    .returning();
+
+  revalidateMathProblemCache(deletedMathProblem.id, deletedMathProblem.userId);
+
+  return deletedMathProblem;
 };

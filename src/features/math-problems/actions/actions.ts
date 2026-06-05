@@ -3,6 +3,7 @@
 import {
   GENERAL_ERROR_MESSAGE,
   INVALID_DATA_ERROR_MESSAGE,
+  NO_PERMISSION_ERROR_MESSAGE,
   UNAUTHED_ERROR_MESSAGE,
 } from "@/lib/auth/constants";
 import { getCurrentUser } from "@/lib/auth/helpers";
@@ -11,6 +12,7 @@ import {
   CreateUpdateMathProblemSchemaType,
 } from "./schemas";
 import {
+  deleteMathProblemDb,
   insertMathProblemDb,
   updateMathProblemDb,
 } from "../server/math-problems";
@@ -109,6 +111,54 @@ export const updateMathProblemAction = async (
     return {
       error: false,
       message: "Math problem updated successfully!",
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      error: true,
+      message: GENERAL_ERROR_MESSAGE,
+    };
+  }
+};
+
+export const deleteMathProblemAction = async (mathProblemId: string) => {
+  const { userId } = await getCurrentUser();
+  if (!userId) {
+    return {
+      error: true,
+      message: UNAUTHED_ERROR_MESSAGE,
+    };
+  }
+
+  const [existingMathProblem] = await db
+    .select()
+    .from(MathProblemTable)
+    .where(
+      and(
+        eq(MathProblemTable.userId, userId),
+        eq(MathProblemTable.id, mathProblemId),
+      ),
+    );
+  if (!existingMathProblem) {
+    return {
+      error: true,
+      message: NO_PERMISSION_ERROR_MESSAGE,
+    };
+  }
+
+  try {
+    const deletedMathProblem = await deleteMathProblemDb(
+      userId,
+      existingMathProblem.id,
+    );
+
+    if (!deletedMathProblem) {
+      throw new Error("Failed to delete math problem.");
+    }
+
+    return {
+      error: false,
+      message: "Math problem deleted successfully!",
     };
   } catch (error) {
     console.error(error);

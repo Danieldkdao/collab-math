@@ -70,12 +70,18 @@ const CollaboratorsSuspense = async ({ searchParams }: CollaboratorsParams) => {
     ...filters,
     page: DEFAULT_PAGE,
   });
+  const listKey = collaborators
+    .map(
+      (collaborator) =>
+        `${collaborator.collaboratorId}:${collaborator.user.updatedAt.getTime()}:${collaborator.totalCollaborations}`,
+    )
+    .join(",");
 
   return (
     <div className="flex flex-col gap-6">
       <CollaboratorFilters />
       <CollaboratorInfiniteCardList
-        key={`${filters.search}:${filters.sortBy}`}
+        key={`${filters.search}:${filters.sortBy}:${listKey}`}
         userId={userId}
         initialCollaborators={collaborators}
         initialHasNextPage={metadata.hasNextPage}

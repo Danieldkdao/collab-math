@@ -83,12 +83,18 @@ const UserThreadsSuspense = async ({ searchParams }: UserMembershipsParams) => {
     ...filters,
     page: DEFAULT_PAGE,
   });
+  const listKey = threads
+    .map(
+      (thread) =>
+        `${thread.id}:${thread.updatedAt.getTime()}:${thread.totalCollaborators}:${thread.totalComments}`,
+    )
+    .join(",");
 
   return (
     <div className="flex flex-col gap-6">
       <UserThreadFilters />
       <UserThreadInfiniteCardList
-        key={`${filters.search}:${filters.sortBy}:${filters.filterBy}`}
+        key={`${filters.search}:${filters.sortBy}:${filters.filterBy}:${listKey}`}
         userId={userId}
         initialThreads={threads}
         initialHasNextPage={metadata.hasNextPage}

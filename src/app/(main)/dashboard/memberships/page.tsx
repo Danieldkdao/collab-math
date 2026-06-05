@@ -93,6 +93,12 @@ const UserMembershipsSuspense = async ({
     userId,
     { ...filters, page: DEFAULT_PAGE },
   );
+  const listKey = threadMemberships
+    .map(
+      (membership) =>
+        `${membership.threadId}:${membership.createdAt.getTime()}:${membership.respondedAt?.getTime() ?? ""}:${membership.status}:${membership.thread.updatedAt.getTime()}`,
+    )
+    .join(",");
 
   return (
     <div className="flex flex-col gap-6">
@@ -100,7 +106,7 @@ const UserMembershipsSuspense = async ({
       <ThreadMembershipsInfiniteCardList
         key={`${filters.search}:${filters.sortBy}:${filters.membershipStatuses.join(
           ",",
-        )}`}
+        )}:${listKey}`}
         userId={userId}
         initialHasNextPage={metadata.hasNextPage}
         initialThreadMemberships={threadMemberships}

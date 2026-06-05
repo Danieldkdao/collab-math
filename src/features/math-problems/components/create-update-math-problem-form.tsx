@@ -29,7 +29,7 @@ export const CreateUpdateMathProblemForm = ({
 }) => {
   const form = useForm<CreateUpdateMathProblemSchemaType>({
     resolver: zodResolver(createUpdateMathProblemSchema),
-    defaultValues: {
+    defaultValues: existingMathProblem ?? {
       title: "",
       content: "",
     },

@@ -1,4 +1,4 @@
-import { CreateMathProblemDialog } from "@/features/math-problems/components/create-math-problem-dialog";
+import { CreateUpdateMathProblemDialog } from "@/features/math-problems/components/create-update-math-problem-dialog";
 import { CreateThreadDialog } from "@/features/threads/components/create-thread-dialog";
 import { ThreadListSidebar } from "@/features/threads/components/thread-list-sidebar";
 import { SidebarLink } from "@/lib/types";
@@ -45,12 +45,12 @@ const quickActionLinks: SidebarLink[] = [
     details: {
       type: "button",
       children: (
-        <CreateMathProblemDialog>
+        <CreateUpdateMathProblemDialog>
           <SidebarMenuButton className="cursor-pointer">
             <SquareFunctionIcon />
             <span>New Math Problem</span>
           </SidebarMenuButton>
-        </CreateMathProblemDialog>
+        </CreateUpdateMathProblemDialog>
       ),
     },
   },

@@ -24,27 +24,31 @@ export const insertThreadDb = async (
       throw new Error("Failed to create thread.");
     }
 
-    const insertedThreadMathProblems = await tx
-      .insert(ThreadMathProblemTable)
-      .values(
-        mathProblemIds.map((mathProblemId) => ({
-          threadId: insertedThread.id,
-          mathProblemId,
-        })),
-      )
-      .returning();
+    if (mathProblemIds.length) {
+      const insertedThreadMathProblems = await tx
+        .insert(ThreadMathProblemTable)
+        .values(
+          mathProblemIds.map((mathProblemId) => ({
+            threadId: insertedThread.id,
+            mathProblemId,
+          })),
+        )
+        .returning();
 
-    if (insertedThreadMathProblems.length !== mathProblemIds.length) {
-      throw new Error("Failed to attach math problems.");
+      if (insertedThreadMathProblems.length !== mathProblemIds.length) {
+        throw new Error("Failed to attach math problems.");
+      }
     }
 
-    const insertedThreadMemberships = await upsertThreadMembershipsDb(
-      insertedThread.id,
-      collaboratorIds.map((id) => ({ userId: id })),
-      tx,
-    );
-    if (insertedThreadMemberships.length !== collaboratorIds.length) {
-      throw new Error("Failed to send memberships to collaborators.");
+    if (collaboratorIds.length) {
+      const insertedThreadMemberships = await upsertThreadMembershipsDb(
+        insertedThread.id,
+        collaboratorIds.map((id) => ({ userId: id })),
+        tx,
+      );
+      if (insertedThreadMemberships.length !== collaboratorIds.length) {
+        throw new Error("Failed to send memberships to collaborators.");
+      }
     }
 
     return insertedThread;

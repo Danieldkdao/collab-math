@@ -21,6 +21,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
+import { CreateUpdateMathProblemDialog } from "./create-update-math-problem-dialog";
+import { DeleteMathProblemButton } from "./delete-math-problem-button";
 
 export const MathProblemCard = ({
   mathProblem,
@@ -74,8 +76,16 @@ export const MathProblemCard = ({
         </Collapsible>
       </CardContent>
       <CardFooter className="flex items-center gap-2 justify-end border-t">
-        <Button variant="outline">Update</Button>
-        <Button variant="destructive">Delete</Button>
+        <CreateUpdateMathProblemDialog existingMathProblem={mathProblem}>
+          <Button variant="outline">Update</Button>
+        </CreateUpdateMathProblemDialog>
+
+        <DeleteMathProblemButton
+          mathProblemId={mathProblem.id}
+          variant="destructive"
+        >
+          Delete
+        </DeleteMathProblemButton>
       </CardFooter>
     </Card>
   );
