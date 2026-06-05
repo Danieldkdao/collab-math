@@ -4,7 +4,7 @@ import {
 } from "@/components/ui/sidebar";
 import { getCurrentUser } from "@/lib/auth/helpers";
 import { getUserSidebarThreadsAction } from "../actions/actions";
-import { SidebarLinkList } from "@/components/dashboard/sidebar/sidebar-link-list";
+import { SidebarLinkList } from "@/components/layout/sidebar/sidebar-link-list";
 import { MessageSquareIcon } from "lucide-react";
 import { Suspense } from "react";
 import { getThreadPath } from "../lib/routes";
