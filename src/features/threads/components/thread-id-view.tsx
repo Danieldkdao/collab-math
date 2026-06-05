@@ -13,10 +13,13 @@ import {
 import { ThreadCommentList } from "@/features/comments/components/thread-comment-list";
 import { checkUserThreadPermissions } from "@/features/thread-memberships/lib/permissions";
 import { User } from "@/lib/auth/auth";
-import { EditIcon, TriangleAlertIcon } from "lucide-react";
+import { EditIcon, Trash2Icon, TriangleAlertIcon } from "lucide-react";
 import { ThreadViewMathProblemsList } from "./thread-view-math-problems-list";
 import { UpdateThreadDialog } from "./update-thread-dialog";
 import { CreateUpdateCommentForm } from "@/features/comments/components/create-update-comment-form";
+import { DeleteThreadButton } from "./delete-thread-button";
+import { TooltipWrapper } from "@/components/tooltip-wrapper";
+import { Button } from "@/components/ui/button";
 
 export const ThreadIdView = async ({
   thread,
@@ -50,13 +53,27 @@ export const ThreadIdView = async ({
               <MarkdownRenderer variant="title" className="flex-1">
                 {thread.title}
               </MarkdownRenderer>
+
               {currentUserId === thread.userId && (
-                <UpdateThreadDialog
-                  existingThread={thread}
-                  tooltipContent="Edit thread"
-                >
-                  <EditIcon />
-                </UpdateThreadDialog>
+                <div className="flex items-center gap-2">
+                  <UpdateThreadDialog
+                    existingThread={thread}
+                    tooltipContent="Edit thread"
+                  >
+                    <Button size="icon" variant="outline">
+                      <EditIcon />
+                    </Button>
+                  </UpdateThreadDialog>
+                  <TooltipWrapper content="Delete thread">
+                    <DeleteThreadButton
+                      threadId={thread.id}
+                      size="icon"
+                      variant="destructive"
+                    >
+                      <Trash2Icon />
+                    </DeleteThreadButton>
+                  </TooltipWrapper>
+                </div>
               )}
             </div>
 

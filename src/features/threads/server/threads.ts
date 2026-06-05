@@ -8,6 +8,7 @@ import {
   upsertThreadMembershipsDb,
 } from "@/features/thread-memberships/server/thread-memberships";
 import { revalidateThreadMathProblemCache } from "@/features/math-problems/server/cache/math-problems";
+import { revalidateThreadMembershipCache } from "@/features/thread-memberships/server/cache/thread-memberships";
 
 export const insertThreadDb = async (
   threadData: typeof ThreadTable.$inferInsert,
@@ -192,4 +193,26 @@ export const updateThreadDb = async (
   revalidateThreadMathProblemCache(updatedThread.id);
 
   return updatedThread;
+};
+
+export const deleteThreadDb = async (userId: string, threadId: string) => {
+  const threadMemberships = await db
+    .select({
+      userId: ThreadMembershipTable.userId,
+    })
+    .from(ThreadMembershipTable)
+    .where(eq(ThreadMembershipTable.threadId, threadId));
+  const [deletedThread] = await db
+    .delete(ThreadTable)
+    .where(and(eq(ThreadTable.userId, userId), eq(ThreadTable.id, threadId)))
+    .returning();
+
+  revalidateThreadCache(deletedThread.id, deletedThread.userId);
+  revalidateThreadMathProblemCache(deletedThread.id);
+
+  threadMemberships.forEach((membership) => {
+    revalidateThreadMembershipCache(membership.userId, deletedThread.id);
+  });
+
+  return deletedThread;
 };

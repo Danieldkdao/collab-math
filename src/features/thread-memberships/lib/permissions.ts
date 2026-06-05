@@ -2,7 +2,7 @@ import { db } from "@/db/db";
 import { ThreadMembershipTable, ThreadTable } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 
-export type ThreadActionType = "can_view" | "can_comment";
+export type ThreadActionType = "can_view" | "can_comment" | "can_delete";
 
 export const checkUserThreadPermissions = async (
   userId: string | null | undefined,
@@ -15,7 +15,7 @@ export const checkUserThreadPermissions = async (
 
   if (!existingThread) return false;
 
-  if (existingThread.userId === userId || existingThread.isPublic) return true;
+  if (existingThread.userId === userId) return true;
 
   const existingThreadMembership =
     await db.query.ThreadMembershipTable.findFirst({
@@ -34,6 +34,7 @@ export const checkUserThreadPermissions = async (
 
   parsedActions.forEach((action) => {
     const permissionResult = getUserThreadPermission(
+      existingThread,
       existingThreadMembership ?? null,
       action,
     );
@@ -44,6 +45,7 @@ export const checkUserThreadPermissions = async (
 };
 
 const getUserThreadPermission = (
+  existingThread: typeof ThreadTable.$inferSelect,
   existingThreadMembership:
     | (typeof ThreadMembershipTable.$inferSelect & {
         thread: typeof ThreadTable.$inferSelect;
@@ -53,12 +55,18 @@ const getUserThreadPermission = (
 ) => {
   switch (action) {
     case "can_comment":
-      return existingThreadMembership?.status === "accepted";
+      return (
+        existingThreadMembership?.status === "accepted" ||
+        existingThread.isPublic
+      );
     case "can_view":
       return (
         existingThreadMembership?.status === "accepted" ||
-        existingThreadMembership?.status === "pending"
+        existingThreadMembership?.status === "pending" ||
+        existingThread.isPublic
       );
+    case "can_delete":
+      return false;
     default:
       throw new Error(
         `Unknown thread membership action: ${action satisfies never}`,

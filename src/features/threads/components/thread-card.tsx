@@ -2,15 +2,27 @@ import { MarkdownRenderer } from "@/components/markdown/markdown-renderer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ThreadTable } from "@/db/schema";
+import {
+  MathProblemTable,
+  ThreadMathProblemTable,
+  ThreadMembershipTable,
+  ThreadTable,
+} from "@/db/schema";
 import { MessageSquareMoreIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { getThreadPublicBadgesStyles } from "../lib/formatters";
+import { UpdateThreadDialog } from "./update-thread-dialog";
+import { User } from "@/lib/auth/auth";
+import { DeleteThreadButton } from "./delete-thread-button";
 
 export const ThreadCard = ({
   thread,
 }: {
   thread: typeof ThreadTable.$inferSelect & {
+    mathProblems: (typeof ThreadMathProblemTable.$inferSelect & {
+      mathProblem: typeof MathProblemTable.$inferSelect;
+    })[];
+    memberships: (typeof ThreadMembershipTable.$inferSelect & { user: User })[];
     totalCollaborators: number;
     totalComments: number;
   };
@@ -59,10 +71,18 @@ export const ThreadCard = ({
             </div>
           </div>
         </div>
-        <div className="w-full md:w-42 shrink-0">
-          <Button className="w-full" variant="outline" asChild>
+        <div className="w-full md:w-42 shrink-0 flex flex-col gap-2">
+          <Button className="w-full" asChild>
             <Link href={`/threads/${thread.id}`}>Open Thread</Link>
           </Button>
+          <UpdateThreadDialog existingThread={thread}>
+            <Button className="w-full" variant="outline">
+              Update
+            </Button>
+          </UpdateThreadDialog>
+          <DeleteThreadButton threadId={thread.id} variant="destructive">
+            Delete
+          </DeleteThreadButton>
         </div>
       </CardContent>
     </Card>

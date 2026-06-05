@@ -3,40 +3,44 @@
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { ComponentProps, ReactNode, useTransition } from "react";
-import { deleteMathProblemAction } from "../actions/actions";
+import { deleteThreadAction } from "../actions/actions";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 
-export const DeleteMathProblemButton = ({
-  mathProblemId,
+export const DeleteThreadButton = ({
+  threadId,
+  children,
   onClick,
   disabled,
-  children,
   ...props
-}: {
-  mathProblemId: string;
-  children: ReactNode;
-} & ComponentProps<typeof Button>) => {
+}: { threadId: string; children: ReactNode } & ComponentProps<
+  typeof Button
+>) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
   const [ConfirmationDialog, confirm] = useConfirm(
     "Confirm Deletion",
-    "Are you sure you want to delete this math problem? This is action is permanent and cannot be undone. This math problem will disappear from all threads that used it.",
+    "Are you sure that you want to delete this thread? This action cannot be undone and all data (excluding math problems and users) related to this thread will be permanently erased.",
   );
-  const [isPending, startTransition] = useTransition();
 
-  const handleMathProblemDeletion = async () => {
+  const handleDeleteThread = async () => {
     if (isPending) return;
     const confirmation = await confirm();
     if (!confirmation) return;
 
     startTransition(async () => {
-      const response = await deleteMathProblemAction(mathProblemId);
+      const response = await deleteThreadAction(threadId);
       if (response.error) {
         toast.error(response.message);
       } else {
         toast.success(response.message);
-        router.refresh();
+        if (pathname === "/dashboard/threads") {
+          router.refresh();
+        } else {
+          router.push("/dashboard/threads");
+        }
       }
     });
   };
@@ -46,7 +50,7 @@ export const DeleteMathProblemButton = ({
       {ConfirmationDialog}
       <Button
         disabled={isPending || disabled}
-        onClick={handleMathProblemDeletion}
+        onClick={handleDeleteThread}
         {...props}
       >
         <LoadingSwap isLoading={isPending}>{children}</LoadingSwap>

@@ -1,13 +1,19 @@
 "use client";
 
 import { SearchNotFound } from "@/components/search-not-found";
-import { ThreadTable } from "@/db/schema";
+import {
+  MathProblemTable,
+  ThreadMathProblemTable,
+  ThreadMembershipTable,
+  ThreadTable,
+} from "@/db/schema";
 import { DEFAULT_PAGE } from "@/lib/constants";
 import { Loader2Icon } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { getUserThreadsAction } from "../actions/actions";
 import { useThreadParams } from "../hooks/use-thread-params";
 import { ThreadCard } from "./thread-card";
+import { User } from "@/lib/auth/auth";
 
 export const UserThreadInfiniteCardList = ({
   userId,
@@ -16,6 +22,10 @@ export const UserThreadInfiniteCardList = ({
 }: {
   userId: string;
   initialThreads: (typeof ThreadTable.$inferSelect & {
+    mathProblems: (typeof ThreadMathProblemTable.$inferSelect & {
+      mathProblem: typeof MathProblemTable.$inferSelect;
+    })[];
+    memberships: (typeof ThreadMembershipTable.$inferSelect & { user: User })[];
     totalCollaborators: number;
     totalComments: number;
   })[];
