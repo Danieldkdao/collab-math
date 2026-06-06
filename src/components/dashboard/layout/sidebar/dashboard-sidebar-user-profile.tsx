@@ -7,9 +7,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
-import { UserAvatar } from "../../user-avatar";
-import { Button } from "../../ui/button";
+} from "../../../ui/dropdown-menu";
+import { UserAvatar } from "../../../user-avatar";
+import { Button } from "../../../ui/button";
 import { LogOutIcon, SettingsIcon, UserIcon } from "lucide-react";
 import { authClient } from "@/lib/auth/auth-client";
 import { toast } from "sonner";

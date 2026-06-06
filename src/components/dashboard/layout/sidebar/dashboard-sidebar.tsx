@@ -19,7 +19,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenuButton,
-} from "../../ui/sidebar";
+} from "../../../ui/sidebar";
 import { DashboardSidebarUserProfile } from "./dashboard-sidebar-user-profile";
 import { SidebarLinkList } from "./sidebar-link-list";
 

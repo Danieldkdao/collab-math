@@ -1,5 +1,5 @@
-import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { DashboardSidebar } from "@/components/layout/sidebar/dashboard-sidebar";
+import { DashboardHeader } from "@/components/dashboard/layout/dashboard-header";
+import { DashboardSidebar } from "@/components/dashboard/layout/sidebar/dashboard-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ReactNode } from "react";
 

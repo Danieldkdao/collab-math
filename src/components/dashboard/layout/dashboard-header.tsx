@@ -1,5 +1,5 @@
-import { ThemeToggle } from "../theme-toggle";
-import { SidebarTrigger } from "../ui/sidebar";
+import { ThemeToggle } from "../../theme-toggle";
+import { SidebarTrigger } from "../../ui/sidebar";
 
 export const DashboardHeader = () => {
   return (
