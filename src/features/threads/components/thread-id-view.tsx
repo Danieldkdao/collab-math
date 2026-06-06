@@ -20,6 +20,7 @@ import { CreateUpdateCommentForm } from "@/features/comments/components/create-u
 import { DeleteThreadButton } from "./delete-thread-button";
 import { TooltipWrapper } from "@/components/tooltip-wrapper";
 import { Button } from "@/components/ui/button";
+import { STARTING_LEVEL } from "@/features/comments/lib/constants";
 
 export const ThreadIdView = async ({
   thread,
@@ -95,7 +96,10 @@ export const ThreadIdView = async ({
               <MarkdownRenderer>{thread.description}</MarkdownRenderer>
             </TabsContent>
             <TabsContent value="comments" className="flex flex-col gap-4 pt-4">
-              <ThreadCommentList threadId={thread.id} />
+              <ThreadCommentList
+                threadId={thread.id}
+                nestedLevel={STARTING_LEVEL}
+              />
               <CreateUpdateCommentForm threadId={thread.id} />
             </TabsContent>
             <TabsContent value="problems">

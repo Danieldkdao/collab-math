@@ -223,6 +223,7 @@ export const getUserThreadsAction = async (
     sortBy: ThreadSortByOptionType;
     filterBy: ThreadFilterByOptionType;
   },
+  limit = PAGE_SIZE,
 ) => {
   "use cache";
   cacheTag(getUserThreadTag(userId));
@@ -348,7 +349,7 @@ export const getUserThreadsAction = async (
     .groupBy(ThreadTable.id)
     .orderBy(sortByMap[sortBy])
     .offset(offset)
-    .limit(PAGE_SIZE);
+    .limit(limit);
 
   const [threadCount] = await db
     .select({

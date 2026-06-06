@@ -191,20 +191,73 @@ const markdownComponents = {
 const markdownTitleClassName =
   "m-0 min-w-0 truncate border-0 p-0 text-3xl font-semibold leading-tight text-foreground";
 
-const MarkdownTitleBlock = ({ children }: { children?: ReactNode }) => (
-  <h1 className={markdownTitleClassName}>{children}</h1>
-);
+const markdownTextVariantClassNames = {
+  title: markdownTitleClassName,
+  subheading1:
+    "m-0 min-w-0 border-0 p-0 text-2xl font-semibold leading-tight text-foreground",
+  subheading2:
+    "m-0 min-w-0 border-0 p-0 text-xl font-semibold leading-tight text-foreground",
+  largetext: "m-0 min-w-0 border-0 p-0 text-lg leading-relaxed text-foreground",
+};
 
-const markdownTitleComponents = {
-  ...markdownComponents,
-  h1: MarkdownTitleBlock,
-  h2: MarkdownTitleBlock,
-  h3: MarkdownTitleBlock,
-  h4: MarkdownTitleBlock,
-  h5: MarkdownTitleBlock,
-  h6: MarkdownTitleBlock,
-  p: MarkdownTitleBlock,
-  hr: () => null,
+type MarkdownRendererVariant =
+  | "default"
+  | keyof typeof markdownTextVariantClassNames;
+
+const createMarkdownTextVariantBlock =
+  (className: string, displayName: string) => {
+    const MarkdownTextVariantBlock = ({
+      children,
+    }: {
+      children?: ReactNode;
+    }) => <p className={className}>{children}</p>;
+
+    MarkdownTextVariantBlock.displayName = displayName;
+
+    return MarkdownTextVariantBlock;
+  };
+
+const createMarkdownTextVariantComponents = (
+  className: string,
+  displayName: string,
+) => {
+  const MarkdownTextVariantBlock = createMarkdownTextVariantBlock(
+    className,
+    displayName,
+  );
+
+  return {
+    ...markdownComponents,
+    h1: MarkdownTextVariantBlock,
+    h2: MarkdownTextVariantBlock,
+    h3: MarkdownTextVariantBlock,
+    h4: MarkdownTextVariantBlock,
+    h5: MarkdownTextVariantBlock,
+    h6: MarkdownTextVariantBlock,
+    p: MarkdownTextVariantBlock,
+  };
+};
+
+const markdownTextVariantComponents = {
+  title: {
+    ...createMarkdownTextVariantComponents(
+      markdownTextVariantClassNames.title,
+      "MarkdownRendererTitle",
+    ),
+    hr: () => null,
+  },
+  subheading1: createMarkdownTextVariantComponents(
+    markdownTextVariantClassNames.subheading1,
+    "MarkdownRendererSubheading1",
+  ),
+  subheading2: createMarkdownTextVariantComponents(
+    markdownTextVariantClassNames.subheading2,
+    "MarkdownRendererSubheading2",
+  ),
+  largetext: createMarkdownTextVariantComponents(
+    markdownTextVariantClassNames.largetext,
+    "MarkdownRendererLargeText",
+  ),
 };
 
 export const MarkdownRenderer = ({
@@ -214,17 +267,19 @@ export const MarkdownRenderer = ({
 }: {
   children: string;
   className?: string;
-  variant?: "default" | "title";
+  variant?: MarkdownRendererVariant;
 }) => {
   const { resolvedTheme } = useTheme();
-  const isTitle = variant === "title";
+  const textVariantComponents =
+    variant !== "default" ? markdownTextVariantComponents[variant] : undefined;
+  const isCompactVariant = variant !== "default";
 
   return (
     <div
       data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
       className={cn(
         "markdown-font-scope min-w-0 w-full font-sans text-foreground",
-        isTitle && "overflow-hidden",
+        isCompactVariant && "overflow-hidden",
         className,
       )}
       style={markdownThemeVars}
@@ -239,11 +294,11 @@ export const MarkdownRenderer = ({
         ]}
         className={cn(
           "max-w-none min-w-0 bg-transparent font-sans text-base text-foreground [&_.katex]:font-sans [&_.katex]:text-foreground [&_.katex-display]:my-6 [&_.katex-display]:w-full [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_.katex-display]:py-2 [&_.katex-display]:text-foreground [&_.katex-display>span]:min-w-max [&_img]:h-auto [&_img]:max-w-full [&_pre]:max-w-full",
-          isTitle &&
+          isCompactVariant &&
             "overflow-hidden [&_.katex-display]:my-0 [&_.katex-display]:inline-block [&_.katex-display]:w-auto [&_.katex-display]:py-0 [&_h1]:border-b-0! [&_h1]:pb-0! [&_h2]:border-b-0! [&_h2]:pb-0! [&_hr]:hidden",
         )}
         style={markdownThemeVars}
-        components={isTitle ? markdownTitleComponents : markdownComponents}
+        components={textVariantComponents ?? markdownComponents}
       />
     </div>
   );

@@ -42,6 +42,7 @@ export const getUserThreadMembershipsAction = async (
     membershipStatuses: ThreadMembershipStatus[];
     page: number;
   },
+  limit = PAGE_SIZE,
 ) => {
   "use cache";
   cacheTag(getUserThreadMembershipTag(userId));
@@ -75,7 +76,7 @@ export const getUserThreadMembershipsAction = async (
     .where(threadMembershipsWhere)
     .orderBy(sortByMap[filterOptions.sortBy])
     .offset(offset)
-    .limit(PAGE_SIZE);
+    .limit(limit);
 
   const [totalThreadMemberships] = await db
     .select({

@@ -7,8 +7,21 @@ import { getThreadPath } from "@/features/threads/lib/routes";
 import { getCurrentUser } from "@/lib/auth/helpers";
 import { ArrowRightIcon, MessageSquarePlusIcon } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 
-const ThreadsPage = async () => {
+const ThreadsPage = () => {
+  return (
+    <Suspense fallback={<ThreadsPageLoading />}>
+      <ThreadsPageSuspense />
+    </Suspense>
+  );
+};
+
+const ThreadsPageLoading = () => {
+  return <div>loading</div>;
+};
+
+const ThreadsPageSuspense = async () => {
   const { userId } = await getCurrentUser();
   if (!userId) return null;
 

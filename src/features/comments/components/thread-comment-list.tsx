@@ -9,10 +9,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { MAX_NESTED_LEVEL } from "../lib/constants";
 
 export const ThreadCommentList = (props: {
   threadId: string;
   commentId?: string;
+  nestedLevel: number;
 }) => {
   return (
     <Suspense fallback={<ThreadCommentListLoading />}>
@@ -28,9 +30,11 @@ const ThreadCommentListLoading = () => {
 const ThreadCommentListSuspense = async ({
   threadId,
   commentId,
+  nestedLevel,
 }: {
   threadId: string;
   commentId?: string;
+  nestedLevel: number;
 }) => {
   const comments = await getThreadComments(threadId, commentId);
 
@@ -77,24 +81,27 @@ const ThreadCommentListSuspense = async ({
 
               <MarkdownRenderer>{comment.message}</MarkdownRenderer>
             </div>
-            <Collapsible className="flex flex-col gap-4">
-              <CollapsibleTrigger className="group flex items-center gap-2 cursor-pointer">
-                <span>Reply ({comment.comments.length})</span>
-                <ChevronDownIcon className="size-4 group-data-[state=open]:rotate-180 transition-transform duration-300" />
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <div className="pl-4 border-l-2 flex flex-col gap-4">
-                  <ThreadCommentList
-                    threadId={threadId}
-                    commentId={comment.id}
-                  />
-                  <CreateUpdateCommentForm
-                    threadId={threadId}
-                    parentId={comment.id}
-                  />
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            {nestedLevel <= MAX_NESTED_LEVEL && (
+              <Collapsible className="flex flex-col gap-4">
+                <CollapsibleTrigger className="group flex items-center gap-2 cursor-pointer">
+                  <span>Reply ({comment.comments.length})</span>
+                  <ChevronDownIcon className="size-4 group-data-[state=open]:rotate-180 transition-transform duration-300" />
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="pl-4 border-l-2 flex flex-col gap-4">
+                    <ThreadCommentList
+                      threadId={threadId}
+                      commentId={comment.id}
+                      nestedLevel={nestedLevel + 1}
+                    />
+                    <CreateUpdateCommentForm
+                      threadId={threadId}
+                      parentId={comment.id}
+                    />
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
           </div>
         ))}
       </div>

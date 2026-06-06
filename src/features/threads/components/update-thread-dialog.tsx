@@ -45,7 +45,7 @@ export const UpdateThreadDialog = ({
   const trigger = tooltipContent ? (
     <Tooltip>
       <TooltipTrigger asChild>
-        <DialogTrigger asChild>{children}</DialogTrigger>
+        <div onClick={() => setOpen(true)}>{children}</div>
       </TooltipTrigger>
       <TooltipContent>{tooltipContent}</TooltipContent>
     </Tooltip>

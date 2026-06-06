@@ -25,6 +25,7 @@ import {
 } from "@uiw/react-md-editor/commands";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
 import {
   CALLOUT_TYPES,
   type CalloutType,
@@ -68,6 +69,7 @@ const unorderedListPattern = /^(\s*)([-*])\s+(.*)$/;
 const orderedListPattern = /^(\s*)(\d+)\.\s+(.*)$/;
 type PreviewOptions = NonNullable<MDEditorProps["previewOptions"]>;
 type PreviewComponents = NonNullable<PreviewOptions["components"]>;
+type MarkdownEditorVariant = "default" | "transparent";
 
 const insertCallout = (type: CalloutType): ICommand => {
   const Icon = CALLOUT_CONFIG[type].icon;
@@ -129,14 +131,17 @@ const getContinuedListLine = (line: string) => {
 export const MarkdownEditor = ({
   value,
   onChange,
-  height,
+  height = 400,
+  variant = "default",
 }: {
   value: string;
   onChange: (value: string) => void;
   height?: number;
+  variant?: MarkdownEditorVariant;
 }) => {
   const { resolvedTheme } = useTheme();
   const isMobile = useIsMobile();
+  const isTransparent = variant === "transparent";
 
   const handleListEnter = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key !== "Enter" || event.shiftKey) {
@@ -269,7 +274,10 @@ export const MarkdownEditor = ({
         children: ({ close, getState, textApi, dispatch }) => (
           <div className="flex min-w-44 flex-col gap-1 p-2">
             {calloutCommands.map((command) => {
-              const type = command.keyCommand?.replace("callout-", "") as CalloutType;
+              const type = command.keyCommand?.replace(
+                "callout-",
+                "",
+              ) as CalloutType;
               const config = CALLOUT_CONFIG[type];
               const Icon = config.icon;
 
@@ -282,11 +290,7 @@ export const MarkdownEditor = ({
                   onClick={() => {
                     const state = getState?.();
                     if (state && textApi && command.execute) {
-                      command.execute(
-                        { ...state, command },
-                        textApi,
-                        dispatch,
-                      );
+                      command.execute({ ...state, command }, textApi, dispatch);
                     }
                     close();
                   }}
@@ -306,27 +310,37 @@ export const MarkdownEditor = ({
   return (
     <div
       data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
-      className="markdown-font-scope rounded-xl border border-input bg-background shadow-xs"
+      data-variant={variant}
+      className={cn(
+        "markdown-font-scope overflow-hidden border border-input",
+        isTransparent
+          ? "rounded-md bg-transparent shadow-none"
+          : "rounded-md bg-transparent shadow-xs transition-[color,box-shadow] outline-none focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50 dark:bg-input/30",
+      )}
     >
       <div className="wmde-markdown-var" />
-      <div className="p-4">
-        <MDEditor
-          value={value}
-          onChange={(nextValue) => onChange(nextValue ?? "")}
-          preview={isMobile ? "edit" : "live"}
-          commands={toolbarCommands}
-          visibleDragbar={false}
-          minHeight={height ?? (isMobile ? 360 : 520)}
-          height={height ?? (isMobile ? 360 : 520)}
-          textareaProps={{
-            placeholder: "Use fenced ```katex blocks or $$...$$ for equations.",
-            onKeyDownCapture: handleListEnter,
-          }}
-          previewOptions={previewOptions}
-          extraCommands={[codeEdit, codeLive, codePreview, fullscreen]}
-          className="overflow-hidden rounded-md border-0! font-sans shadow-none!"
-        />
-      </div>
+      <MDEditor
+        value={value}
+        onChange={(nextValue) => onChange(nextValue ?? "")}
+        preview={isMobile ? "edit" : "live"}
+        commands={toolbarCommands}
+        visibleDragbar={false}
+        minHeight={height ?? (isMobile ? 360 : 520)}
+        height={height ?? (isMobile ? 360 : 520)}
+        textareaProps={{
+          placeholder:
+            "Write markdown. Use KaTeX blocks or inline math for equations.",
+          onKeyDownCapture: handleListEnter,
+        }}
+        previewOptions={previewOptions}
+        extraCommands={[codeEdit, codeLive, codePreview, fullscreen]}
+        className={cn(
+          "overflow-hidden text-base rounded-none border-0! font-sans shadow-none! [&>.w-md-editor-toolbar]:rounded-none! [&_.w-md-editor-content]:rounded-none! [&_.w-md-editor-preview]:rounded-none! [&_.w-md-editor-preview]:shadow-none! [&_.w-md-editor-text-input]:text-lg! [&_.w-md-editor-text-pre>code]:text-lg!",
+          isTransparent
+            ? "rounded-none bg-transparent! [&>.w-md-editor-toolbar]:border-b! [&>.w-md-editor-toolbar]:border-input! [&>.w-md-editor-toolbar]:bg-transparent! [&_.w-md-editor-content]:bg-transparent! [&_.w-md-editor-input]:bg-transparent! [&_.w-md-editor-preview]:bg-transparent! [&_.w-md-editor-text]:bg-transparent! [&_.wmde-markdown-color]:bg-transparent! [&_.wmde-markdown]:bg-transparent!"
+            : "bg-transparent! [&>.w-md-editor-toolbar]:bg-transparent! [&_.w-md-editor-content]:bg-transparent! [&_.w-md-editor-input]:bg-transparent! [&_.w-md-editor-preview]:bg-transparent! [&_.w-md-editor-text]:bg-transparent! [&_.wmde-markdown-color]:bg-transparent! [&_.wmde-markdown]:bg-transparent!",
+        )}
+      />
     </div>
   );
 };

@@ -216,6 +216,7 @@ export const getUserMathProblemsAction = async (
     page: number;
     sortBy: MathProblemSortByOptionType;
   },
+  limit = PAGE_SIZE,
 ) => {
   "use cache";
   cacheTag(getUserMathProblemTag(userId));
@@ -252,7 +253,7 @@ export const getUserMathProblemsAction = async (
     .groupBy(MathProblemTable.id)
     .orderBy(sortByMap[sortBy])
     .offset(offset)
-    .limit(PAGE_SIZE);
+    .limit(limit);
 
   const [mathProblemCount] = await db
     .select({

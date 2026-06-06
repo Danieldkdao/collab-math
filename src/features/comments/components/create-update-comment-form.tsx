@@ -29,7 +29,7 @@ export const CreateUpdateCommentForm = ({
   const form = useForm<CreateUpdateCommentSchemaType>({
     resolver: zodResolver(createUpdateCommentSchema),
     defaultValues: {
-      message: "",
+      message: existingComment?.message ?? "",
     },
   });
 
@@ -64,6 +64,7 @@ export const CreateUpdateCommentForm = ({
                 value={field.value}
                 height={200}
                 onChange={field.onChange}
+                variant="transparent"
               />
             </FieldContent>
             {fieldState.error && <FieldError errors={[fieldState.error]} />}

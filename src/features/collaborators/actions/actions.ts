@@ -29,6 +29,7 @@ export const getCollaboratorsAction = async (
     sortBy: CollaboratorSortByOptionType;
     page: number;
   },
+  limit = PAGE_SIZE,
 ) => {
   "use cache";
   cacheTag(getUserThreadMembershipTag(userId));
@@ -103,7 +104,7 @@ export const getCollaboratorsAction = async (
     )
     .orderBy(sortByMap[sortBy])
     .offset(offset)
-    .limit(PAGE_SIZE);
+    .limit(limit);
 
   const [collaboratorsTotal] = await db
     .select({
