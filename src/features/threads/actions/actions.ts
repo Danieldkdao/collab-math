@@ -32,7 +32,11 @@ import {
   SQL,
 } from "drizzle-orm";
 import { cacheTag } from "next/cache";
-import { getThreadIdTag, getUserThreadTag } from "../server/cache/threads";
+import {
+  getThreadGlobalTag,
+  getThreadIdTag,
+  getUserThreadTag,
+} from "../server/cache/threads";
 import {
   deleteThreadDb,
   insertThreadDb,
@@ -173,9 +177,13 @@ export const deleteThreadAction = async (threadId: string) => {
   }
 };
 
-export const getThreadAction = async (userId: string, threadId: string) => {
+export const getThreadAction = async (
+  threadId: string,
+  userId?: string | null,
+) => {
   "use cache";
-  cacheTag(getThreadIdTag(threadId), getUserThreadMembershipTag(userId));
+  cacheTag(getThreadIdTag(threadId));
+  if (userId) cacheTag(getUserThreadMembershipTag(userId));
 
   const existingThread = await db.query.ThreadTable.findFirst({
     where: eq(ThreadTable.id, threadId),
@@ -204,9 +212,6 @@ export const getThreadAction = async (userId: string, threadId: string) => {
     );
   }
 
-  if (existingThread.userId === userId || existingThread.isPublic)
-    return existingThread;
-
   if (
     !(await checkUserThreadPermissions(userId, existingThread.id, ["can_view"]))
   )
@@ -215,18 +220,20 @@ export const getThreadAction = async (userId: string, threadId: string) => {
   return existingThread;
 };
 
-export const getUserThreadsAction = async (
-  userId: string,
+export const getThreadsAction = async (
   filterOptions: {
     page: number;
     search: string;
     sortBy: ThreadSortByOptionType;
     filterBy: ThreadFilterByOptionType;
   },
+  userId?: string | null,
+  publicThreads: boolean = false,
   limit = PAGE_SIZE,
 ) => {
   "use cache";
-  cacheTag(getUserThreadTag(userId));
+  if (userId) cacheTag(getUserThreadTag(userId));
+  if (publicThreads) cacheTag(getThreadGlobalTag());
 
   const { page, search, sortBy, filterBy } = filterOptions;
 
@@ -256,6 +263,15 @@ export const getUserThreadsAction = async (
     private: eq(ThreadTable.isPublic, false),
     public: eq(ThreadTable.isPublic, true),
   };
+
+  const whereQuery = and(
+    or(
+      userId ? eq(ThreadTable.userId, userId) : undefined,
+      publicThreads ? eq(ThreadTable.isPublic, true) : undefined,
+    ),
+    searchFilter,
+    filterByMap[filterBy],
+  );
 
   const threads = await db
     .select({
@@ -343,9 +359,7 @@ export const getUserThreadsAction = async (
       eq(ThreadMembershipTable.threadId, ThreadTable.id),
     )
     .leftJoin(CommentTable, eq(CommentTable.threadId, ThreadTable.id))
-    .where(
-      and(eq(ThreadTable.userId, userId), searchFilter, filterByMap[filterBy]),
-    )
+    .where(whereQuery)
     .groupBy(ThreadTable.id)
     .orderBy(sortByMap[sortBy])
     .offset(offset)
@@ -356,9 +370,7 @@ export const getUserThreadsAction = async (
       total: count(),
     })
     .from(ThreadTable)
-    .where(
-      and(eq(ThreadTable.userId, userId), searchFilter, filterByMap[filterBy]),
-    );
+    .where(whereQuery);
 
   const hasPrevPage = page > 1;
   const hasNextPage = PAGE_SIZE * page < threadCount.total;

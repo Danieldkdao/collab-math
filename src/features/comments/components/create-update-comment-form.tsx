@@ -20,10 +20,12 @@ export const CreateUpdateCommentForm = ({
   threadId,
   existingComment,
   parentId,
+  afterSubmit,
 }: {
   threadId: string;
   existingComment?: typeof CommentTable.$inferSelect;
-  parentId?: string;
+  parentId?: string | null;
+  afterSubmit?: () => void;
 }) => {
   const router = useRouter();
   const form = useForm<CreateUpdateCommentSchemaType>({
@@ -46,6 +48,7 @@ export const CreateUpdateCommentForm = ({
       toast.success(response.message);
       form.reset();
       router.refresh();
+      afterSubmit?.();
     }
   };
 
@@ -72,9 +75,13 @@ export const CreateUpdateCommentForm = ({
         )}
       />
       <div className="w-full flex justify-end">
-        <Button size="icon" disabled={form.formState.isSubmitting}>
+        <Button
+          size={existingComment ? "default" : "icon"}
+          variant={existingComment ? "outline" : "default"}
+          disabled={form.formState.isSubmitting}
+        >
           <LoadingSwap isLoading={form.formState.isSubmitting}>
-            <SendIcon />
+            {existingComment ? "Save changes" : <SendIcon />}
           </LoadingSwap>
         </Button>
       </div>

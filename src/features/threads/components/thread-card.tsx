@@ -17,6 +17,7 @@ import { DeleteThreadButton } from "./delete-thread-button";
 
 export const ThreadCard = ({
   thread,
+  currentUserId,
 }: {
   thread: typeof ThreadTable.$inferSelect & {
     mathProblems: (typeof ThreadMathProblemTable.$inferSelect & {
@@ -26,6 +27,7 @@ export const ThreadCard = ({
     totalCollaborators: number;
     totalComments: number;
   };
+  currentUserId?: string | null;
 }) => {
   const {
     text,
@@ -38,12 +40,14 @@ export const ThreadCard = ({
       <CardContent className="flex min-w-0 flex-col md:flex-row md:items-center gap-4">
         <div className="flex min-w-0 flex-col gap-4 flex-1">
           <div className="flex flex-col items-start md:flex-row md:items-center gap-2">
-            <MarkdownRenderer
-              variant="title"
-              className="w-auto max-w-full shrink truncate"
-            >
-              {thread.title}
-            </MarkdownRenderer>
+            <Link href={`/threads/${thread.id}`}>
+              <MarkdownRenderer
+                variant="title"
+                className="w-auto max-w-full shrink truncate"
+              >
+                {thread.title}
+              </MarkdownRenderer>
+            </Link>
             <Badge variant={variant}>
               <Icon />
               {text}
@@ -71,19 +75,21 @@ export const ThreadCard = ({
             </div>
           </div>
         </div>
-        <div className="w-full md:w-42 shrink-0 flex flex-col gap-2">
-          <Button className="w-full" asChild>
-            <Link href={`/threads/${thread.id}`}>Open Thread</Link>
-          </Button>
-          <UpdateThreadDialog existingThread={thread}>
-            <Button className="w-full" variant="outline">
-              Update
+        {currentUserId && thread.userId === currentUserId && (
+          <div className="w-full md:w-42 shrink-0 flex flex-col gap-2">
+            <Button className="w-full" asChild>
+              <Link href={`/threads/${thread.id}`}>Open Thread</Link>
             </Button>
-          </UpdateThreadDialog>
-          <DeleteThreadButton threadId={thread.id} variant="destructive">
-            Delete
-          </DeleteThreadButton>
-        </div>
+            <UpdateThreadDialog existingThread={thread}>
+              <Button className="w-full" variant="outline">
+                Update
+              </Button>
+            </UpdateThreadDialog>
+            <DeleteThreadButton threadId={thread.id} variant="destructive">
+              Delete
+            </DeleteThreadButton>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

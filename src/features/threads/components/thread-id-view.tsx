@@ -13,7 +13,12 @@ import {
 import { ThreadCommentList } from "@/features/comments/components/thread-comment-list";
 import { checkUserThreadPermissions } from "@/features/thread-memberships/lib/permissions";
 import { User } from "@/lib/auth/auth";
-import { EditIcon, Trash2Icon, TriangleAlertIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  EditIcon,
+  Trash2Icon,
+  TriangleAlertIcon,
+} from "lucide-react";
 import { ThreadViewMathProblemsList } from "./thread-view-math-problems-list";
 import { UpdateThreadDialog } from "./update-thread-dialog";
 import { CreateUpdateCommentForm } from "@/features/comments/components/create-update-comment-form";
@@ -21,6 +26,7 @@ import { DeleteThreadButton } from "./delete-thread-button";
 import { TooltipWrapper } from "@/components/tooltip-wrapper";
 import { Button } from "@/components/ui/button";
 import { STARTING_LEVEL } from "@/features/comments/lib/constants";
+import Link from "next/link";
 
 export const ThreadIdView = async ({
   thread,
@@ -33,10 +39,16 @@ export const ThreadIdView = async ({
     })[];
     memberships: (typeof ThreadMembershipTable.$inferSelect & { user: User })[];
   };
-  currentUserId: string;
+  currentUserId?: string | null;
 }) => {
   return (
     <div className="w-full min-w-0 flex flex-col gap-4">
+      <Button variant="ghost" className="self-start" asChild>
+        <Link href="/threads">
+          <ArrowLeftIcon />
+          Back to threads
+        </Link>
+      </Button>
       {!(await checkUserThreadPermissions(currentUserId, thread.id, [
         "can_comment",
       ])) && (

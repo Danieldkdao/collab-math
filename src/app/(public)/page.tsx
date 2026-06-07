@@ -50,7 +50,7 @@ const features = [
 
 const HomePage = () => {
   return (
-    <div className="w-full flex flex-col gap-8 py-20 px-6">
+    <div className="w-full flex flex-col gap-8">
       <div className="flex flex-col gap-6 items-center">
         <h1 className="text-5xl font-bold text-center max-w-200">
           Work through math together, one thread at a time.

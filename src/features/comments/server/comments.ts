@@ -18,7 +18,6 @@ export const insertCommentDb = async (
 
 export const updateCommentDb = async (
   commentId: string,
-  userId: string,
   threadId: string,
   commentData: Partial<typeof CommentTable.$inferSelect>,
 ) => {
@@ -26,15 +25,43 @@ export const updateCommentDb = async (
     .update(CommentTable)
     .set(commentData)
     .where(
-      and(
-        eq(CommentTable.id, commentId),
-        eq(CommentTable.userId, userId),
-        eq(CommentTable.threadId, threadId),
-      ),
+      and(eq(CommentTable.id, commentId), eq(CommentTable.threadId, threadId)),
     )
     .returning();
 
   revalidateCommentCache(updatedComment.threadId);
 
   return updatedComment;
+};
+
+export const deleteCommentDb = async (commentId: string, threadId: string) => {
+  const [deletedComment] = await db
+    .update(CommentTable)
+    .set({
+      status: "deleted",
+      lastActionAt: new Date(),
+      message: "This message has been deleted.",
+    })
+    .where(
+      and(eq(CommentTable.id, commentId), eq(CommentTable.threadId, threadId)),
+    )
+    .returning();
+
+  while (true) {
+    const deletedComments = await db
+      .delete(CommentTable)
+      .where(
+        and(
+          eq(CommentTable.parentId, deletedComment.id),
+          eq(CommentTable.threadId, threadId),
+        ),
+      )
+      .returning();
+
+    if (deletedComments.length === 0) break;
+  }
+
+  revalidateCommentCache(deletedComment.threadId);
+
+  return deletedComment;
 };

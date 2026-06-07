@@ -1,44 +1,48 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { LoadingSwap } from "@/components/ui/loading-swap";
 import { useConfirm } from "@/hooks/use-confirm";
 import { usePendingActionStore } from "@/store/use-pending-action-store";
+import { deleteCommentAction } from "../actions/actions";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ComponentProps, ReactNode } from "react";
-import { toast } from "sonner";
-import { updateThreadMembershipAction } from "../actions/actions";
-import { getThreadPath } from "@/features/threads/lib/routes";
+import { LoadingSwap } from "@/components/ui/loading-swap";
 
-export const AcceptThreadMembershipButton = ({
+export const DeleteCommentButton = ({
+  commentId,
   threadId,
+  afterAction,
   children,
+  onClick,
   disabled,
   ...props
-}: { threadId: string; children: ReactNode } & ComponentProps<
-  typeof Button
->) => {
+}: {
+  commentId: string;
+  threadId: string;
+  children: ReactNode;
+  afterAction?: () => void;
+} & ComponentProps<typeof Button>) => {
   const router = useRouter();
   const [ConfirmationDialog, confirm] = useConfirm(
-    "Confirm Accept Invitation",
-    "Are you sure you want to accept this invitation to join this thread as a member? You can always leave the thread at any time.",
+    "Confirm Deletion",
+    "Are you sure you want to delete this comment? This action will remove this comment along with all sub-comments and cannot be undone.",
   );
   const { isPending, setIsPending } = usePendingActionStore();
 
-  const handleAcceptThreadMembership = async () => {
+  const handleDeleteComment = async () => {
     const confirmation = await confirm();
     if (!confirmation) return;
 
     setIsPending(true);
 
-    const response = await updateThreadMembershipAction(threadId, {
-      status: "accepted",
-    });
+    const response = await deleteCommentAction(commentId, threadId);
     if (response.error) {
       toast.error(response.message);
     } else {
-      toast.success("Invitation accepted successfully!");
-      router.push(getThreadPath(threadId));
+      toast.success(response.message);
+      router.refresh();
+      afterAction?.();
     }
 
     setIsPending(false);
@@ -48,9 +52,9 @@ export const AcceptThreadMembershipButton = ({
     <>
       {ConfirmationDialog}
       <Button
-        {...props}
         disabled={isPending || disabled}
-        onClick={handleAcceptThreadMembership}
+        onClick={handleDeleteComment}
+        {...props}
       >
         <LoadingSwap isLoading={isPending}>{children}</LoadingSwap>
       </Button>

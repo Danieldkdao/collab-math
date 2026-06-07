@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { useConfirm } from "@/hooks/use-confirm";
-import { useThreadMembershipActionStore } from "@/store/use-thread-membership-action-store";
+import { usePendingActionStore } from "@/store/use-pending-action-store";
 import { useRouter } from "next/navigation";
 import { ComponentProps, ReactNode } from "react";
 import { toast } from "sonner";
@@ -22,7 +22,7 @@ export const RejectThreadMembershipButton = ({
     "Confirm Invitation Rejection",
     "Are you sure you want to reject this invitation? The thread owner will have to resend an invitation if you want to join.",
   );
-  const { isPending, setIsPending } = useThreadMembershipActionStore();
+  const { isPending, setIsPending } = usePendingActionStore();
 
   const handleAcceptThreadMembership = async () => {
     const confirmation = await confirm();

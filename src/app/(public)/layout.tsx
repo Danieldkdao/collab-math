@@ -6,7 +6,9 @@ const PublicLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex flex-col w-full min-h-dvh">
       <PublicNavbar />
-      <main className="w-full flex-1 mx-auto max-w-7xl">{children}</main>
+      <main className="w-full flex-1 mx-auto max-w-7xl py-20 px-6">
+        {children}
+      </main>
       <PublicFooter />
     </div>
   );

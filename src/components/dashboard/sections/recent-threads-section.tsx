@@ -2,7 +2,7 @@ import { MarkdownRenderer } from "@/components/markdown/markdown-renderer";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getUserThreadsAction } from "@/features/threads/actions/actions";
+import { getThreadsAction } from "@/features/threads/actions/actions";
 import { getThreadPublicBadgesStyles } from "@/features/threads/lib/formatters";
 import { getCurrentUser } from "@/lib/auth/helpers";
 import { DEFAULT_PAGE } from "@/lib/constants";
@@ -71,14 +71,15 @@ const RecentThreadsSectionSuspense = async () => {
   const { userId } = await getCurrentUser();
   if (!userId) return null;
 
-  const { threads } = await getUserThreadsAction(
-    userId,
+  const { threads } = await getThreadsAction(
     {
       page: DEFAULT_PAGE,
       filterBy: "all",
       search: "",
       sortBy: "most_recent",
     },
+    userId,
+    false,
     3,
   );
 

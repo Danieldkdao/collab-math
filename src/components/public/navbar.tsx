@@ -18,7 +18,9 @@ export const PublicNavbar = () => {
   return (
     <nav className="p-6 border-b flex items-center justify-between gap-2 w-full">
       <div className="flex items-center gap-8">
-        <h1 className="text-3xl font-semibold text-primary">CollabMath</h1>
+        <Link href="/">
+          <h1 className="text-3xl font-semibold text-primary">CollabMath</h1>
+        </Link>
         <Link
           href="/threads"
           className="text-lg hover:underline font-medium hidden md:block"

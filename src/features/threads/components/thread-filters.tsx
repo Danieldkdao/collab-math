@@ -20,7 +20,7 @@ import {
   formatThreadSortByOptions,
 } from "../lib/formatters";
 
-export const UserThreadFilters = () => {
+export const ThreadFilters = () => {
   const [filters, setFilters] = useThreadParams();
 
   return (

@@ -10,3 +10,7 @@ export const ThreadMembershipStatusEnum = pgEnum(
   "thread_membership_statuses",
   threadMembershipStatuses,
 );
+
+export const commentStatuses = ["created", "updated", "deleted"] as const;
+export type CommentStatusType = (typeof commentStatuses)[number];
+export const commentStatusesEnum = pgEnum("comment_statuses", commentStatuses);

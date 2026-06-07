@@ -20,10 +20,9 @@ const ThreadLoading = () => {
 
 const ThreadSuspense = async ({ params }: ThreadIdParams) => {
   const { userId } = await getCurrentUser();
-  if (!userId) return;
   const { threadId } = await params;
 
-  const thread = await getThreadAction(userId, threadId);
+  const thread = await getThreadAction(threadId, userId);
   if (!thread) {
     return <div>resusable thread not found component</div>;
   }

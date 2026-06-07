@@ -9,6 +9,7 @@ import {
 import { createdAt, id } from "../helpers";
 import { ThreadTable } from "./thread";
 import { user } from "./user";
+import { commentStatusesEnum } from "../shared";
 
 export const CommentTable = pgTable("comment", {
   id,
@@ -16,13 +17,16 @@ export const CommentTable = pgTable("comment", {
     .references(() => ThreadTable.id, { onDelete: "cascade" })
     .notNull(),
   userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
-  parentId: uuid("parent_id").references(
-    (): AnyPgColumn => CommentTable.id,
-    { onDelete: "cascade" },
-  ),
+  parentId: uuid("parent_id").references((): AnyPgColumn => CommentTable.id, {
+    onDelete: "cascade",
+  }),
   message: text("message").notNull(),
+  status: commentStatusesEnum("status").notNull().default("created"),
   createdAt,
-  updatedAt: timestamp("updated_at", { withTimezone: true }),
+  lastActionAt: timestamp("last_action_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const commentRelations = relations(CommentTable, ({ one, many }) => ({

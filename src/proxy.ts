@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 import { user } from "./db/schema";
 
 const authedRoutes = ["/sign-in", "/sign-up", "/forgot-password"];
-const publicRoutes = ["/"];
+const publicRoutes = ["/", "/threads"];
 
 export const proxy = async (request: NextRequest) => {
   const url = request.nextUrl.clone();
@@ -19,7 +19,8 @@ export const proxy = async (request: NextRequest) => {
   if (
     !existingUser &&
     !authedRoutes.includes(pathname) &&
-    !publicRoutes.includes(pathname)
+    pathname !== "/" &&
+    !publicRoutes.some((route) => pathname.includes(route))
   ) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
