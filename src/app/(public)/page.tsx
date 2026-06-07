@@ -1,3 +1,4 @@
+import { HeroImage } from "@/components/public/hero-image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,7 +12,6 @@ import {
   UserPlusIcon,
   WorkflowIcon,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -69,14 +69,7 @@ const HomePage = () => {
           </Button>
         </div>
       </div>
-      <div className="w-full h-100 md:h-135 lg:h-160 rounded-md border relative overflow-hidden">
-        <Image
-          src="/hero-image.png"
-          alt="Hero image"
-          fill
-          className="object-cover h-full w-full"
-        />
-      </div>
+      <HeroImage />
       <div className="flex flex-col gap-6 items-center w-full">
         <h2 className="text-3xl font-semibold text-center max-w-200">
           Features
