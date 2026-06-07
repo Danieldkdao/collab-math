@@ -1,7 +1,8 @@
 import { AlertWrapper } from "@/components/alert-wrapper";
 import { MarkdownRenderer } from "@/components/markdown/markdown-renderer";
+import { TooltipWrapper } from "@/components/tooltip-wrapper";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserAvatar } from "@/components/user-avatar";
 import {
   MathProblemTable,
@@ -10,7 +11,9 @@ import {
   ThreadTable,
   user,
 } from "@/db/schema";
+import { CreateUpdateCommentForm } from "@/features/comments/components/create-update-comment-form";
 import { ThreadCommentList } from "@/features/comments/components/thread-comment-list";
+import { STARTING_LEVEL } from "@/features/comments/lib/constants";
 import { checkUserThreadPermissions } from "@/features/thread-memberships/lib/permissions";
 import { User } from "@/lib/auth/auth";
 import {
@@ -19,14 +22,10 @@ import {
   Trash2Icon,
   TriangleAlertIcon,
 } from "lucide-react";
+import Link from "next/link";
+import { DeleteThreadButton } from "./delete-thread-button";
 import { ThreadViewMathProblemsList } from "./thread-view-math-problems-list";
 import { UpdateThreadDialog } from "./update-thread-dialog";
-import { CreateUpdateCommentForm } from "@/features/comments/components/create-update-comment-form";
-import { DeleteThreadButton } from "./delete-thread-button";
-import { TooltipWrapper } from "@/components/tooltip-wrapper";
-import { Button } from "@/components/ui/button";
-import { STARTING_LEVEL } from "@/features/comments/lib/constants";
-import Link from "next/link";
 
 export const ThreadIdView = async ({
   thread,
@@ -98,26 +97,23 @@ export const ThreadIdView = async ({
               </span>
             </div>
           </div>
-          <Tabs defaultValue="description">
-            <TabsList className="w-full">
-              <TabsTrigger value="description">Description</TabsTrigger>
-              <TabsTrigger value="comments">Comments</TabsTrigger>
-              <TabsTrigger value="problems">Problems</TabsTrigger>
-            </TabsList>
-            <TabsContent value="description">
-              <MarkdownRenderer>{thread.description}</MarkdownRenderer>
-            </TabsContent>
-            <TabsContent value="comments" className="flex flex-col gap-4 pt-4">
+
+          <div className="w-full flex flex-col gap-8">
+            <MarkdownRenderer>{thread.description}</MarkdownRenderer>
+            <div className="flex flex-col gap-4">
+              <h2 className="text-2xl font-semibold">Math problems</h2>
+              <ThreadViewMathProblemsList threadId={thread.id} />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <h2 className="text-2xl font-semibold">Comments</h2>
               <ThreadCommentList
                 threadId={thread.id}
                 nestedLevel={STARTING_LEVEL}
               />
               <CreateUpdateCommentForm threadId={thread.id} />
-            </TabsContent>
-            <TabsContent value="problems">
-              <ThreadViewMathProblemsList threadId={thread.id} />
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

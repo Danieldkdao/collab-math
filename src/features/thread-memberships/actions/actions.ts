@@ -59,7 +59,7 @@ export const getUserThreadMembershipsAction = async (
     searchFilter,
   );
 
-  const offset = (filterOptions.page - 1) * PAGE_SIZE;
+  const offset = (filterOptions.page - 1) * limit;
 
   const sortByMap: Record<SortByOptionsType, SQL<unknown>> = {
     most_recent: desc(ThreadMembershipTable.createdAt),

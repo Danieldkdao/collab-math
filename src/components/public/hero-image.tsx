@@ -1,22 +1,23 @@
-"use client";
-
-import { useTheme } from "next-themes";
 import Image from "next/image";
 
 export const HeroImage = () => {
-  const { resolvedTheme } = useTheme();
-
-  const imageSrc =
-    resolvedTheme === "dark" ? "/hero-image-dark.png" : "/hero-image-light.png";
-
   return (
-    <div className="w-full h-100 md:h-135 lg:h-160 rounded-md border relative overflow-hidden">
+    <div className="relative aspect-3420/1794 w-full overflow-hidden rounded-md border">
       <Image
-        src={imageSrc}
+        src="/hero-image-light.png"
         alt="Hero image"
         fill
-        className="object-cover h-full w-full"
+        className="object-cover dark:hidden"
         loading="eager"
+        sizes="(min-width: 1280px) 1232px, calc(100vw - 3rem)"
+      />
+      <Image
+        src="/hero-image-dark.png"
+        alt="Hero image"
+        fill
+        className="hidden object-cover dark:block"
+        loading="eager"
+        sizes="(min-width: 1280px) 1232px, calc(100vw - 3rem)"
       />
     </div>
   );

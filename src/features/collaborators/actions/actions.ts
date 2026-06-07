@@ -36,7 +36,7 @@ export const getCollaboratorsAction = async (
 
   const { search, sortBy, page } = filterOptions;
 
-  const offset = (page - 1) * PAGE_SIZE;
+  const offset = (page - 1) * limit;
 
   const collaboratorId = sql<string>`
     CASE

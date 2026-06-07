@@ -246,7 +246,7 @@ export const getThreadsAction = async (
       )
     : undefined;
 
-  const offset = (page - 1) * PAGE_SIZE;
+  const offset = (page - 1) * limit;
 
   const sortByMap: Record<ThreadSortByOptionType, SQL<unknown>> = {
     oldest: asc(ThreadTable.createdAt),

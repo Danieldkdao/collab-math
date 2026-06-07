@@ -223,7 +223,7 @@ export const getUserMathProblemsAction = async (
 
   const { search, page, sortBy } = filterOptions;
 
-  const offset = (page - 1) * PAGE_SIZE;
+  const offset = (page - 1) * limit;
 
   const usageInThreads = count(ThreadMathProblemTable.mathProblemId);
   const searchFilter = search.trim()
